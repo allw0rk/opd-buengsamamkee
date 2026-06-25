@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>เข้าสู่ระบบ — งานการพยาบาลผู้ป่วยนอก</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --primary:#1E56C4;--primary-dark:#0F1F3D;
+      --red:#DC2626;
+      --text:#0F172A;--text2:#334155;--text3:#64748B;
+      --border:#E2E8F0;
+    }
+    html,body{height:100%}
+    body{
+      font-family:"IBM Plex Sans Thai","Sarabun",sans-serif;
+      min-height:100vh;
+      background:url('component/hospital.jpg') center/cover no-repeat fixed;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+    }
+    /* overlay เพื่อให้รูปไม่จ้าเกินไป */
+    body::after{
+      content:"";position:fixed;inset:0;
+      background:rgba(5,15,40,.32);
+      pointer-events:none;z-index:0;
+    }
+
+    /* Logo มุมบนซ้าย */
+    .page-brand{
+      position:fixed;top:1.75rem;left:2.25rem;z-index:10;
+      display:flex;align-items:center;gap:10px;
+    }
+    .page-brand img{
+      width:40px;height:40px;border-radius:9px;object-fit:cover;
+      box-shadow:0 2px 12px rgba(0,0,0,.3);
+    }
+    .page-brand-text strong{
+      display:block;font-size:13px;font-weight:700;color:#fff;
+      text-shadow:0 1px 8px rgba(0,0,0,.4);line-height:1.3;
+    }
+    .page-brand-text span{font-size:10.5px;color:rgba(255,255,255,.6);font-weight:300}
+
+    /* Card */
+    .login-wrap{
+      position:relative;z-index:1;
+      width:100%;
+      display:flex;align-items:center;justify-content:center;
+      padding:2rem 1.5rem;
+    }
+    .login-card{
+      background:#fff;border-radius:22px;
+      box-shadow:0 32px 80px rgba(0,0,0,.4);
+      width:100%;max-width:480px;
+      padding:3.5rem 3.5rem 2.75rem;
+      animation:cardIn .45s cubic-bezier(.22,.68,0,1.08) both;
+    }
+    @keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+
+    .card-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.02em}
+    .card-sub{font-size:13px;color:var(--text3);margin-bottom:2rem;line-height:1.6}
+
+    .form-group{margin-bottom:1.1rem}
+    label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.01em}
+    input[type=text],input[type=password]{
+      width:100%;padding:.7rem 1rem;
+      border:1.5px solid var(--border);border-radius:9px;
+      font-family:inherit;font-size:14px;color:var(--text);
+      outline:none;transition:border .15s,box-shadow .15s,background .15s;
+      background:#F8FAFC;
+    }
+    input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,86,196,.1);background:#fff}
+    input::placeholder{color:#CBD5E1;font-size:13.5px}
+
+    .btn-login{
+      width:100%;padding:.78rem;margin-top:.25rem;
+      background:var(--primary-dark);color:#fff;
+      border:none;border-radius:9px;
+      font-family:inherit;font-size:14.5px;font-weight:600;
+      cursor:pointer;transition:all .2s;letter-spacing:.01em;
+    }
+    .btn-login:hover{background:#162d5a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,31,61,.4)}
+    .btn-login:active{transform:none;background:#0a1a38}
+
+    .error-msg{
+      display:none;background:#FEF2F2;border:1px solid #FECACA;
+      color:var(--red);font-size:12.5px;padding:.55rem .85rem;
+      border-radius:8px;margin-bottom:.9rem;
+      align-items:center;gap:6px;
+    }
+    .error-msg.show{display:flex}
+    .error-msg svg{width:14px;height:14px;flex-shrink:0}
+
+    .back-link{
+      display:block;text-align:center;margin-top:1.4rem;
+      font-size:12.5px;color:var(--text3);text-decoration:none;transition:color .15s;
+    }
+    .back-link:hover{color:var(--primary)}
+
+    .card-divider{height:1px;background:var(--border);margin:1.5rem 0}
+    .card-footer{text-align:center;font-size:11.5px;color:#94A3B8;line-height:1.8}
+  </style>
+</head>
+<body>
+
+  <!-- Logo มุมบนซ้าย -->
+  <div class="page-brand">
+    <img src="component/logobuenggif.png" alt="logo">
+    <div class="page-brand-text">
+      <strong>โรงพยาบาลบึงสามัคคี</strong>
+      <span>งานการพยาบาลผู้ป่วยนอก</span>
+    </div>
+  </div>
+
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="card-title">เข้าสู่ระบบ</div>
+      <div class="card-sub">กรุณากรอกข้อมูลเพื่อเข้าสู่ระบบ</div>
+
+      <div id="error-msg" class="error-msg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="error-text"></span>
+      </div>
+
+      <form onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label for="username">ชื่อผู้ใช้งาน</label>
+          <input type="text" id="username" placeholder="ชื่อ-สกุล หรือชื่อย่อ" maxlength="30" required autofocus autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">รหัสผ่าน</label>
+          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
+      </form>
+
+      <a class="back-link" href="index.html">← กลับหน้าสาธารณะ</a>
+
+      <div class="card-divider"></div>
+      <div class="card-footer">
+        งานการพยาบาลผู้ป่วยนอก<br>โรงพยาบาลบึงสามัคคี จังหวัดกำแพงเพชร
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PASS = '14135';
+
+    if (sessionStorage.getItem('opd-auth') === '1') {
+      window.location.href = 'staff.html';
+    }
+
+    function doLogin(e) {
+      e.preventDefault();
+      const name = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const errEl = document.getElementById('error-msg');
+      const errTxt = document.getElementById('error-text');
+
+      errEl.classList.remove('show');
+
+      if (!name) {
+        errTxt.textContent = 'กรุณาใส่ชื่อผู้ใช้งาน';
+        errEl.classList.add('show'); return;
+      }
+      if (pass !== PASS) {
+        errTxt.textContent = 'รหัสผ่านไม่ถูกต้อง';
+        errEl.classList.add('show'); return;
+      }
+
+      sessionStorage.setItem('opd-auth', '1');
+      sessionStorage.setItem('opd-user', name);
+      window.location.href = 'staff.html';
+    }
+  </script>
+</body>
+</html>

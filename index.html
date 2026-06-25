@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>งานการพยาบาลผู้ป่วยนอก — โรงพยาบาลบึงสามัคคี</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-top">
+    <img class="nav-logo-img" src="component/logo.gif" alt="โรงพยาบาลบึงสามัคคี">
+    <div class="nav-brand">
+      <strong>งานการพยาบาลผู้ป่วยนอก</strong>
+      <span>กลุ่มงานการพยาบาล โรงพยาบาลบึงสามัคคี</span>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-inner">
+      <button class="nav-btn active" onclick="showPage('home',this)">หน้าแรก</button>
+      <button class="nav-btn" onclick="showPage('services',this)">บริการ OPD</button>
+      <button class="nav-btn" id="nav-about-btn" onclick="toggleAboutDropdown(event)">เกี่ยวกับเรา <svg id="nav-about-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:3px;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="nav-btn" id="nav-doc-btn" onclick="toggleDropdown(event)">
+        เอกสารหน่วยงาน
+        <svg id="nav-doc-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:3px;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="nav-btn" onclick="showPage('stats',this)">สถิติบริการ</button>
+      <button class="nav-btn" onclick="showPage('performance',this)">ผลการดำเนินงาน</button>
+      <button class="nav-btn" id="nav-qa-btn" onclick="toggleQaDropdown(event)">มาตรฐาน QA <svg id="nav-qa-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:3px;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div style="flex:1"></div>
+      <a class="nav-staff" href="login.html">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        สำหรับเจ้าหน้าที่
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- DROPDOWN MENU (outside nav so overflow:auto doesn't clip it) -->
+<div id="nav-doc-menu" style="
+  display:none;
+  position:fixed;
+  background:#001F4D;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;
+  min-width:210px;
+  z-index:9999;
+  box-shadow:0 16px 40px rgba(0,0,0,.4);
+  overflow:hidden;
+  animation:dropIn .18s ease both;
+">
+  <button onclick="showDocPage('guide')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(184,92,0,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📚</span>
+    <span>คู่มือ</span>
+  </button>
+  <button onclick="showDocPage('docs')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(0,82,165,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📋</span>
+    <span>แนวทางต่างๆ</span>
+  </button>
+  <button onclick="showDocPage('forms')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(192,57,43,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📄</span>
+    <span>แบบฟอร์ม</span>
+  </button>
+</div>
+
+<!-- QA DROPDOWN -->
+<div id="nav-qa-menu" style="display:none;position:fixed;background:#001F4D;border:1px solid rgba(255,255,255,.15);border-radius:10px;min-width:260px;z-index:9999;box-shadow:0 16px 40px rgba(0,0,0,.4);overflow:hidden;animation:dropIn .18s ease both">
+  <button onclick="window.location.href='qa.html?m=1'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span><span>การนำองค์กร</span></button>
+  <button onclick="window.location.href='qa.html?m=2'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span><span>กลยุทธ์</span></button>
+  <button onclick="window.location.href='qa.html?m=3'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span><span>ผู้ใช้บริการ</span></button>
+  <button onclick="window.location.href='qa.html?m=4'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span><span>การวัด วิเคราะห์ และการจัดการความรู้</span></button>
+  <button onclick="window.location.href='qa.html?m=5'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">5</span><span>บุคลากร</span></button>
+  <button onclick="window.location.href='qa.html?m=6'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">6</span><span>การปฏิบัติการพยาบาล</span></button>
+  <button onclick="window.location.href='qa.html?m=7'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">7</span><span>ผลลัพธ์ทางการพยาบาล</span></button>
+</div>
+
+<!-- ABOUT DROPDOWN -->
+<div id="nav-about-menu" style="display:none;position:fixed;background:#001F4D;border:1px solid rgba(255,255,255,.15);border-radius:10px;min-width:220px;z-index:9999;box-shadow:0 16px 40px rgba(0,0,0,.4);overflow:hidden;animation:dropIn .18s ease both">
+  <button onclick="showAboutPage('about')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(0,82,165,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📋</span>
+    <span>วิสัยทัศน์ พันธกิจ ค่านิยม</span>
+  </button>
+  <button onclick="showAboutPage('org')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(0,82,165,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🏢</span>
+    <span>โครงสร้างองค์กร บุคลากร</span>
+  </button>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="component/hf_20260306_074215_04640ca7-042c-45d6-bb56-58b1e8a42489.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-bottom-fade"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow-txt">Outpatient Nursing &nbsp;·&nbsp; Bueng Samakkhi Hospital</p>
+      <h1>งานการพยาบาล<em>ผู้ป่วยนอก</em><span class="h1-sub">โรงพยาบาลบึงสามัคคี</span></h1>
+      <div class="hero-rule"></div>
+      <p class="hero-sub">กลุ่มงานการพยาบาล · โรงพยาบาลบึงสามัคคี · จังหวัดกำแพงเพชร</p>
+      <p class="hero-meta-txt">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        เปิดบริการ 08.30–16.30 น. &nbsp;·&nbsp; จันทร์–ศุกร์ &nbsp;·&nbsp; มีมาตรฐาน ปลอดภัย ใส่ใจทุกคน เพื่อสุขภาพดีของประชาชน
+      </p>
+    </div>
+  </div>
+  <div class="home-content-band">
+    <div class="welcome-divider">
+      <span class="welcome-divider-line"></span>
+      <span class="welcome-divider-text">ยินดีต้อนรับ</span>
+      <span class="welcome-divider-line"></span>
+    </div>
+    <div class="welcome-img-section">
+      <img src="component/รวม.jpg" alt="งานการพยาบาลผู้ป่วยนอก" class="welcome-full-img">
+    </div>
+    <div class="home-news-band">
+      <div class="home-news-hd">
+        <div class="sec-eyebrow">ข่าวสาร</div>
+        <div class="sec-title" style="margin-bottom:0">ประชาสัมพันธ์ล่าสุด</div>
+      </div>
+      <div class="wrap" style="padding-top:1.5rem">
+        <div id="home-news"><div class="news-empty">กำลังโหลด...</div></div>
+        <div style="text-align:center;margin-top:1.5rem">
+          <button class="view-all-btn" onclick="showPage('news')">ดูทั้งหมด &nbsp;→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<div class="page" id="page-services">
+  <div class="pg-band">
+    <div class="pg-band-inner">
+      <p class="pg-band-eyebrow">OPD Services · โรงพยาบาลบึงสามัคคี</p>
+      <h2 class="pg-band-title">บริการพยาบาลผู้ป่วยนอก</h2>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="general-box">
+      <div><h3 style="font-size:16px;font-weight:600;color:var(--primary-dark);margin-bottom:5px">ตรวจโรคทั่วไป</h3><p style="font-size:13px;color:var(--text2)">ให้บริการตรวจรักษาโรคทั่วไป คัดกรองผู้ป่วย ประเมินอาการ จ่ายยา และส่งต่อตามความเหมาะสม ทุกวันราชการ ไม่ต้องนัดล่วงหน้า</p></div>
+      <div class="time-badge"><div class="tb-time">08.30–16.30</div><div class="tb-day">จันทร์ – ศุกร์</div></div>
+    </div>
+
+    <div class="sec-eyebrow">คลินิกพิเศษ</div>
+    <div class="sec-title">ตารางให้บริการ</div>
+    <div id="clinic-today-banner"></div>
+    <div class="tbl-wrap">
+      <table class="clinic-tbl">
+        <thead><tr><th style="width:42%">คลินิก</th><th style="width:34%">วันให้บริการ</th><th>เวลา</th></tr></thead>
+        <tbody>
+          <tr data-clinic-days="4"><td><div class="cname">คลินิกเบาหวาน</div></td><td><span class="dtag blue">ทุกวันพฤหัสบดี</span></td><td class="ctm">08.00–12.00 น.</td></tr>
+          <tr data-clinic-days="4"><td><div class="cname">คลินิกความดันโลหิตสูง</div></td><td><span class="dtag blue">ทุกวันพฤหัสบดี</span></td><td class="ctm">13.00–16.00 น.</td></tr>
+          <tr data-clinic-days="3"><td><div class="cname">คลินิก Warfarin</div></td><td><span class="dtag blue">ทุกวันพุธ</span></td><td class="ctm">08.30–12.00 น.</td></tr>
+          <tr data-clinic-days="4"><td><div class="cname">คลินิกไตเรื้อรัง</div></td><td><span class="dtag blue">ทุกวันพฤหัสบดี</span></td><td class="ctm">08.30–12.00 น.</td></tr>
+          <tr data-clinic-days="first-mon"><td><div class="cname">คลินิกหอบหืด</div></td><td><span class="dtag blue">วันจันทร์แรกของเดือน</span></td><td class="ctm">08.30–12.00 น.</td></tr>
+          <tr data-clinic-days="first-mon"><td><div class="cname">คลินิกปอดอุดกั้นเรื้อรัง (COPD)</div></td><td><span class="dtag blue">วันจันทร์แรกของเดือน</span></td><td class="ctm">08.30–12.00 น.</td></tr>
+          <tr data-clinic-days="1,2,3,4,5"><td><div class="cname">คลินิก One Stop Service เลิกบุหรี่</div></td><td><span class="dtag green">ทุกวัน</span></td><td class="ctm">08.30–16.30 น.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ORG -->
+<div class="page" id="page-org">
+  <div class="pg-band">
+    <div class="pg-band-inner">
+      <p class="pg-band-eyebrow">โครงสร้างหน่วยงาน · Outpatient Nursing OPD</p>
+      <h2 class="pg-band-title">งานการพยาบาลผู้ป่วยนอก</h2>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="org-chart">
+
+      <!-- หัวหน้า -->
+      <div class="org-level">
+        <div class="org-card org-card--leader">
+          <div class="org-photo org-photo--lg org-photo--blue" id="org-photo-s1" onclick="triggerPhotoUpload('s1')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s1" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s1" style="font-size:26px">👩‍⚕️</span>
+            <div class="org-photo-cam" style="background:#0052A5">📷</div>
+          </div>
+          <div class="org-info">
+            <div class="org-name" style="color:#003D7A">พว.เกษศิรินทร์ ผาเลิศ</div>
+            <div class="org-role" style="color:#1A6CC4">พยาบาลวิชาชีพชำนาญการพิเศษ</div>
+            <div class="org-badge" style="background:#0052A5">หัวหน้างานการพยาบาลผู้ป่วยนอก</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="org-line-v"></div>
+
+      <!-- รองหัวหน้า -->
+      <div class="org-level">
+        <div class="org-card org-card--deputy">
+          <div class="org-photo org-photo--lg org-photo--teal" id="org-photo-s2" onclick="triggerPhotoUpload('s2')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s2" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s2" style="font-size:26px">👩‍⚕️</span>
+            <div class="org-photo-cam" style="background:#0A7C63">📷</div>
+          </div>
+          <div class="org-info">
+            <div class="org-name" style="color:#0A7C63">พว.วาสนา ประเสริฐแก้ว</div>
+            <div class="org-role" style="color:#148A6E">พยาบาลวิชาชีพชำนาญการ</div>
+            <div class="org-badge" style="background:#0A7C63">รองหัวหน้างานการพยาบาลผู้ป่วยนอก</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="org-line-v"></div>
+      <div class="org-section-divider">พยาบาลวิชาชีพ</div>
+
+      <!-- พยาบาล 4 คน -->
+      <div class="org-nurses">
+        <div class="org-card org-card--nurse">
+          <div class="org-photo org-photo--md org-photo--purple" onclick="triggerPhotoUpload('s3')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s3" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s3" style="font-size:22px">👩‍⚕️</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#7B4FD4">📷</div>
+          </div>
+          <div class="org-name" style="color:#5A3AB0">พว.พิมพ์ลภัชร ธนพลวิเชียรชัย</div>
+          <div class="org-role" style="color:#7B4FD4">พยบ.ชำนาญการ</div>
+        </div>
+        <div class="org-card org-card--nurse">
+          <div class="org-photo org-photo--md org-photo--purple" onclick="triggerPhotoUpload('s4')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s4" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s4" style="font-size:22px">👩‍⚕️</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#7B4FD4">📷</div>
+          </div>
+          <div class="org-name" style="color:#5A3AB0">พว.เบญญาภา มยุลา</div>
+          <div class="org-role" style="color:#7B4FD4">พยบ.ปฏิบัติการ</div>
+        </div>
+        <div class="org-card org-card--nurse">
+          <div class="org-photo org-photo--md org-photo--purple" onclick="triggerPhotoUpload('s5')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s5" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s5" style="font-size:22px">👩‍⚕️</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#7B4FD4">📷</div>
+          </div>
+          <div class="org-name" style="color:#5A3AB0">พว.ประกายแก้ว ฮาวค้าฟู</div>
+          <div class="org-role" style="color:#7B4FD4">พยบ.ปฏิบัติการ</div>
+        </div>
+        <div class="org-card org-card--nurse">
+          <div class="org-photo org-photo--md org-photo--purple" onclick="triggerPhotoUpload('s6')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s6" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s6" style="font-size:22px">👩‍⚕️</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#7B4FD4">📷</div>
+          </div>
+          <div class="org-name" style="color:#5A3AB0">พว.วิสสุตา เสนารักษ์</div>
+          <div class="org-role" style="color:#7B4FD4">พยาบาลวิชาชีพ</div>
+        </div>
+      </div>
+
+      <div class="org-line-v"></div>
+      <div class="org-section-divider">เจ้าหน้าที่สนับสนุน</div>
+
+      <!-- เจ้าหน้าที่สนับสนุน -->
+      <div class="org-supports">
+        <div class="org-card org-card--support">
+          <div class="org-photo org-photo--md org-photo--orange" onclick="triggerPhotoUpload('s7')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s7" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s7" style="font-size:22px">👩‍💼</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#B85C00">📷</div>
+          </div>
+          <div class="org-name" style="color:#7A3D00">นางสาวนัสนันท์ ต้นกันยา</div>
+          <div class="org-role" style="color:#B85C00">จพ.บริการเอกสารทั่วไป</div>
+        </div>
+        <div class="org-card org-card--support">
+          <div class="org-photo org-photo--md org-photo--orange" onclick="triggerPhotoUpload('s8')" title="คลิกเพื่ออัปโหลดรูป">
+            <img id="img-s8" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <span id="icon-s8" style="font-size:22px">👩‍💼</span>
+            <div class="org-photo-cam org-photo-cam--sm" style="background:#B85C00">📷</div>
+          </div>
+          <div class="org-name" style="color:#7A3D00">นางสาวศรีประไพร พูลเพิ่ม</div>
+          <div class="org-role" style="color:#B85C00">พนักงานช่วยเหลือคนไข้</div>
+        </div>
+      </div>
+
+      <div class="org-pills">
+        <span style="background:#0052A5;color:#fff">OPD มาตรฐาน</span>
+        <span style="background:#0A7C63;color:#fff">ปลอดภัย</span>
+        <span style="background:#7B4FD4;color:#fff">ใส่ใจทุกคน</span>
+        <span style="background:#1A7A3A;color:#fff">เพื่อสุขภาพดีของประชาชน</span>
+      </div>
+    </div>
+
+    <input type="file" id="photo-upload-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+  </div>
+</div>
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="pg-band">
+    <div class="pg-band-inner">
+      <p class="pg-band-eyebrow">การบริหารหน่วยงาน · Outpatient Nursing OPD</p>
+      <h2 class="pg-band-title">วิสัยทัศน์ พันธกิจ และค่านิยม</h2>
+    </div>
+  </div>
+  <div class="wrap">
+
+    <!-- Vision -->
+    <div class="about-vision">
+      <p class="about-vision-eyebrow">วิสัยทัศน์ · Vision</p>
+      <p class="about-vision-text">"มีมาตรฐาน ปลอดภัย ใส่ใจทุกคน เพื่อสุขภาพดีของประชาชน"</p>
+    </div>
+
+    <!-- Mission -->
+    <div class="about-card" style="margin-bottom:1.25rem">
+      <div class="about-card-label">พันธกิจ · Mission</div>
+      <ul class="about-mission">
+        <li><span class="about-mnum">1</span><span>ดูแลผู้ป่วยแบบองค์รวม ครอบคลุมการส่งเสริม ป้องกัน รักษา และฟื้นฟู</span></li>
+        <li><span class="about-mnum">2</span><span>เชื่อมต่อการดูแลสู่เครือข่ายชุมชน เพื่อสุขภาพที่ต่อเนื่องและยั่งยืน</span></li>
+        <li><span class="about-mnum">3</span><span>พัฒนาทีมงานให้มีสมรรถนะตามมาตรฐานวิชาชีพ และมีความสุขในการทำงาน</span></li>
+        <li><span class="about-mnum">4</span><span>บริหารทรัพยากรอย่างมีประสิทธิภาพ คุ้มค่า และโปร่งใส</span></li>
+      </ul>
+    </div>
+
+    <!-- Values (HAI layout) -->
+    <div class="about-card-label" style="margin-bottom:.75rem">ค่านิยม · Core Values (รวย)</div>
+    <div class="about-hai-wrap">
+      <div class="about-hai-header">
+        <div class="about-hai-hd-l">Core values<br><span style="font-size:11px;opacity:.7">ค่านิยม</span> <strong>รวย</strong></div>
+        <div class="about-hai-hd-r">HAI core values</div>
+      </div>
+      <div class="about-hai-row">
+        <div class="about-hai-card" style="background:#E8581A">
+          <div class="about-hai-thai">รับผิดชอบ</div>
+          <div class="about-hai-eng">R = Responsibility</div>
+        </div>
+        <div class="about-hai-bullets">
+          <div class="about-hai-bul"><strong>Accountability</strong> → ความรับผิดชอบต่อผลลัพธ์ของผู้ป่วยและงานที่ทำ</div>
+          <div class="about-hai-bul"><strong>Focus on Patient</strong> → คำนึงถึงความปลอดภัยและประโยชน์ของผู้ป่วยเป็นหลัก</div>
+        </div>
+      </div>
+      <div class="about-hai-row">
+        <div class="about-hai-card" style="background:#1E3A5F">
+          <div class="about-hai-thai">มีวินัย</div>
+          <div class="about-hai-eng">D = Discipline</div>
+        </div>
+        <div class="about-hai-bullets">
+          <div class="about-hai-bul"><strong>Continuous Improvement</strong> → ปฏิบัติตามมาตรฐานอย่างสม่ำเสมอ</div>
+          <div class="about-hai-bul"><strong>Systems Thinking</strong> → ทำงานตามระบบ ไม่ทำตามความเคยชิน</div>
+        </div>
+      </div>
+      <div class="about-hai-row">
+        <div class="about-hai-card" style="background:#B08000">
+          <div class="about-hai-thai">ยึดมั่นบริการ</div>
+          <div class="about-hai-eng">S = Service Commitment</div>
+        </div>
+        <div class="about-hai-bullets">
+          <div class="about-hai-bul"><strong>Patient Focus / Customer Focus</strong> → ใส่ใจผู้ป่วยเป็นศูนย์กลาง</div>
+          <div class="about-hai-bul"><strong>Teamwork</strong> → ทำงานร่วมกันเพื่อให้บริการที่ดีที่สุด</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document shortcuts -->
+    <div class="sec-eyebrow" style="margin-top:2rem">เอกสารบริหาร</div>
+    <div class="sec-title">เข้าถึงเอกสารได้เลย</div>
+    <div class="about-docs">
+      <button class="about-doc-btn" onclick="filterDocs('manual_orient')"><span>📋</span>คู่มือปฐมนิเทศ</button>
+      <button class="about-doc-btn" onclick="filterDocs('manual_plan')"><span>📅</span>แผนปฏิบัติการ</button>
+      <button class="about-doc-btn" onclick="filterDocs('wi_procurement')"><span>🛒</span>แผนจัดซื้อจัดจ้าง</button>
+      <button class="about-doc-btn" onclick="filterDocs('wi_annual')"><span>📝</span>รายงานประจำปี</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- DOCS -->
+<div class="page" id="page-docs">
+  <div class="wrap">
+    <div class="sec-eyebrow">เอกสารหน่วยงาน</div>
+    <div class="sec-title">แนวทางต่างๆ</div>
+    <div id="pub-docs-list"><div class="news-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- FORMS -->
+<div class="page" id="page-forms">
+  <div class="wrap">
+    <div class="sec-eyebrow">เอกสารหน่วยงาน</div>
+    <div class="sec-title">แบบฟอร์ม</div>
+    <div id="pub-forms-list"><div class="news-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- GUIDE -->
+<div class="page" id="page-guide">
+  <div class="wrap">
+    <div class="sec-eyebrow">เอกสารหน่วยงาน</div>
+    <div class="sec-title">คู่มือ</div>
+    <div id="pub-guide-list"><div class="news-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- FILTERED DOCS -->
+<div class="page" id="page-filtered">
+  <div class="wrap">
+    <div class="sec-eyebrow">เอกสารบริหาร</div>
+    <div class="sec-title" id="filtered-title">—</div>
+    <button onclick="showAboutPage('about')" style="display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid var(--border);border-radius:20px;padding:6px 16px;font-family:inherit;font-size:12.5px;color:var(--text3);cursor:pointer;margin-bottom:1.5rem;transition:all .2s" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">
+      ← กลับการบริหารหน่วยงาน
+    </button>
+    <div id="filtered-list"><div class="news-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="page" id="page-stats">
+  <div class="wrap">
+    <div class="sec-eyebrow">สถิติบริการ</div>
+    <div class="sec-title">แบบบันทึกกิจกรรมการพยาบาลประจำวัน</div>
+
+    <!-- TAB -->
+    <div style="display:flex;margin-bottom:1.25rem;background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)">
+      <button id="tab-daily-btn" onclick="switchStatsTab('daily')" style="flex:1;padding:12px;font-family:inherit;font-size:13.5px;font-weight:600;border:none;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s">รายวัน</button>
+      <button id="tab-monthly-btn" onclick="switchStatsTab('monthly')" style="flex:1;padding:12px;font-family:inherit;font-size:13.5px;font-weight:500;border:none;cursor:pointer;background:var(--white);color:var(--text3);transition:all .2s;border-left:1px solid var(--border2)">รายเดือน</button>
+    </div>
+
+    <!-- รายวัน -->
+    <div id="stats-daily-panel">
+
+    <!-- เลือกวันที่ -->
+    <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <label style="font-size:13px;font-weight:600;color:var(--text2)">เลือกวันที่:</label>
+      <input type="date" id="stats-date" style="padding:7px 12px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13px;color:var(--text)" onchange="loadDayStats(this.value)">
+      <span class="pulse-dot"></span><span style="font-size:12px;color:var(--text3)">ข้อมูล Real-time</span>
+    </div>
+
+    <!-- Placeholder ก่อนเลือกวันที่ -->
+    <div id="stats-placeholder" style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:3rem 1.5rem;text-align:center;box-shadow:var(--shadow);margin-bottom:1rem">
+      <div style="font-size:2.5rem;margin-bottom:.75rem">📅</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:.35rem">เลือกวันที่เพื่อดูข้อมูล</div>
+      <div style="font-size:13px;color:var(--text3)">กรุณาเลือกวันที่ด้านบนเพื่อโหลดสถิติบริการประจำวัน</div>
+    </div>
+
+    <!-- DAILY STATS CARD -->
+    <div id="stats-form-card" style="display:none;margin-bottom:1rem">
+      <!-- KPI Header -->
+      <div style="background:linear-gradient(135deg,#0F1F3D 0%,#1E56C4 100%);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:12px;box-shadow:0 4px 16px rgba(0,82,165,.2)">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:3px">สถิติบริการประจำวัน &nbsp;·&nbsp; <span id="sv-hdr-user">—</span></div>
+        <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:.9rem" id="sv-hdr-date">—</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:.7rem 1rem;text-align:center">
+            <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px">OPD Visit รวม</div>
+            <div style="font-size:32px;font-weight:800;color:#fff;line-height:1" id="d-count">—</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">ราย</div>
+          </div>
+          <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:.7rem 1rem;text-align:center">
+            <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px">พยาบาลวิชาชีพ</div>
+            <div style="font-size:32px;font-weight:800;color:#fff;line-height:1" id="d-nurse">—</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">คน</div>
+          </div>
+          <div style="background:rgba(255,255,255,.12);border-radius:10px;padding:.7rem 1rem;text-align:center">
+            <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px">Productivity</div>
+            <div style="font-size:32px;font-weight:800;line-height:1" id="prod-result">—</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">%</div>
+          </div>
+        </div>
+        <div id="sv-nodata-msg" style="display:none;margin-top:.75rem;background:rgba(255,255,255,.08);border-radius:8px;padding:.6rem 1rem;font-size:12.5px;color:rgba(255,255,255,.6);text-align:center"></div>
+      </div>
+      <!-- Charts -->
+      <div class="chart-grid">
+        <div class="chart-box"><h4 id="h-stats-weekly">จำนวนผู้ป่วย 7 วันย้อนหลัง</h4><canvas id="chart-stats-weekly" height="140"></canvas></div>
+        <div class="chart-box"><h4 id="h-stats-clinic">ผู้ป่วยแยกตามคลินิก</h4><canvas id="chart-stats-clinic" height="140"></canvas></div>
+      </div>
+    </div>
+    </div><!-- end daily panel -->
+
+    <!-- รายเดือน -->
+    <div id="stats-monthly-panel" style="display:none">
+
+      <!-- Header: ชื่อเดือน + ตัวเลือก -->
+      <div style="background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 100%);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 4px 16px rgba(0,82,165,.2)">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,.65);margin-bottom:3px;font-weight:500;letter-spacing:.04em">สถิติบริการประจำเดือน</div>
+          <div style="font-size:20px;font-weight:700;color:#fff;line-height:1" id="m-title">กำลังโหลด...</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <select id="stats-month" onchange="loadMonthStats()" style="padding:7px 12px;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-family:inherit;font-size:13px;color:#fff;background:rgba(15,31,61,.85);cursor:pointer">
+            <option value="0" style="background:#0F1F3D;color:#fff">มกราคม</option><option value="1" style="background:#0F1F3D;color:#fff">กุมภาพันธ์</option><option value="2" style="background:#0F1F3D;color:#fff">มีนาคม</option>
+            <option value="3" style="background:#0F1F3D;color:#fff">เมษายน</option><option value="4" style="background:#0F1F3D;color:#fff">พฤษภาคม</option><option value="5" style="background:#0F1F3D;color:#fff">มิถุนายน</option>
+            <option value="6" style="background:#0F1F3D;color:#fff">กรกฎาคม</option><option value="7" style="background:#0F1F3D;color:#fff">สิงหาคม</option><option value="8" style="background:#0F1F3D;color:#fff">กันยายน</option>
+            <option value="9" style="background:#0F1F3D;color:#fff">ตุลาคม</option><option value="10" style="background:#0F1F3D;color:#fff">พฤศจิกายน</option><option value="11" style="background:#0F1F3D;color:#fff">ธันวาคม</option>
+          </select>
+          <input type="number" id="stats-year" onchange="loadMonthStats()" min="2560" max="2580" style="padding:7px 10px;border:1px solid rgba(255,255,255,.3);border-radius:8px;font-family:inherit;font-size:13px;color:#fff;background:rgba(15,31,61,.85);width:84px;text-align:center">
+        </div>
+      </div>
+
+      <!-- เนื้อหาหลัก -->
+      <div id="monthly-content">
+
+        <!-- KPI 3 cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+          <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow)">
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">ผู้รับบริการรวม</div>
+            <div style="font-size:34px;font-weight:800;color:var(--primary);line-height:1" id="m-total">—</div>
+            <div style="font-size:11.5px;color:var(--text3);margin-top:4px">ราย</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow)">
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">เฉลี่ยต่อวัน &nbsp;·&nbsp; บันทึก <strong id="m-days" style="color:var(--teal)">—</strong> วัน</div>
+            <div style="font-size:34px;font-weight:800;color:var(--amber);line-height:1" id="m-avg">—</div>
+            <div style="font-size:11.5px;color:var(--text3);margin-top:4px">ราย/วัน</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow)">
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">Productivity เฉลี่ย</div>
+            <div style="font-size:34px;font-weight:800;line-height:1" id="m-prod">—</div>
+            <div style="height:5px;background:#E8EDF6;border-radius:99px;overflow:hidden;margin:8px 0 3px">
+              <div id="m-prod-bar" style="height:100%;background:var(--primary);border-radius:99px;width:0%;transition:width .8s ease"></div>
+            </div>
+            <div style="font-size:10.5px;color:var(--text3)">% &nbsp;(เป้า 80%)</div>
+          </div>
+        </div>
+
+        <!-- Bar chart รายวัน -->
+        <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow);margin-bottom:14px">
+          <div style="font-size:11.5px;color:var(--text3);margin-bottom:1rem">ผู้รับบริการรายวัน (ราย)</div>
+          <div style="position:relative;height:160px"><canvas id="chart-monthly-daily"></canvas></div>
+        </div>
+
+        <!-- Donut + Top activities -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow)">
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:.75rem">แยกประเภทผู้รับบริการ</div>
+            <div style="position:relative;height:180px"><canvas id="chart-monthly-clinic"></canvas></div>
+            <div id="m-type-list" style="display:flex;flex-direction:column;gap:8px;margin-top:.75rem"></div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow)">
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:.75rem">กิจกรรมสูงสุด 5 อันดับ</div>
+            <div id="m-top-acts" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
+        </div>
+
+        <!-- ตารางสรุปกิจกรรม -->
+        <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)">
+          <div class="pf-acc-head" onclick="toggleAcc(this)" style="border-radius:0">สรุปกิจกรรมทั้งเดือน</div>
+          <div class="pf-acc-body" style="display:none;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:13px">
+              <thead><tr>
+                <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--border2);background:#F8FAFC">รายการ</th>
+                <th style="padding:9px 14px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--border2);background:#F8FAFC">รวม</th>
+                <th style="padding:9px 14px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--border2);background:#F8FAFC">เฉลี่ย/วัน</th>
+              </tr></thead>
+              <tbody id="monthly-summary-tbl"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ตารางรายวัน -->
+        <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem;box-shadow:var(--shadow)">
+          <div class="pf-acc-head acc-open" onclick="toggleAcc(this)" style="border-radius:0">รายละเอียดรายวัน</div>
+          <div class="pf-acc-body" style="overflow-x:auto">
+            <table class="pf-tbl" style="min-width:640px">
+              <thead><tr>
+                <th style="text-align:left">วันที่</th>
+                <th>OPD Visit</th><th>นัด</th><th>Walk-in</th>
+                <th>Admit</th><th>Refer</th><th>พยาบาล</th>
+                <th>Productivity%</th>
+              </tr></thead>
+              <tbody id="monthly-daily-tbl"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- end monthly-content -->
+
+    </div><!-- end monthly panel -->
+
+  </div>
+</div>
+
+<!-- PERFORMANCE -->
+<div class="page" id="page-performance">
+  <div class="wrap">
+    <div class="sec-eyebrow">Performance</div>
+    <div class="sec-title">ผลการดำเนินงานและตัวชี้วัดคุณภาพ</div>
+
+    <!-- Link cards แทนตาราง KPI -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.5rem">
+
+      <!-- ตัวชี้วัด QA 6 มิติ -->
+      <a href="https://docs.google.com/spreadsheets/d/1wsCSR0hDnyhMvuNdeZgjfqWIGX972RJOLCaKB7NMknE/edit?usp=sharing" target="_blank" style="text-decoration:none">
+        <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2rem 1.75rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:1.25rem;transition:box-shadow .2s,transform .2s" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,82,165,.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
+          <div style="width:52px;height:52px;background:var(--primary-light);border-radius:12px;display:flex;align-items:center;justify-content:flex-shrink:0">
+            <svg style="width:28px;height:28px;margin:12px" viewBox="0 0 24 24" fill="none" stroke="#0052A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:3px">ตัวชี้วัดคุณภาพการพยาบาล</div>
+            <div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:4px">ตัวชี้วัด QA 6 มิติ</div>
+            <div style="font-size:12px;color:var(--text3)">กองการพยาบาล สป.สธ. พ.ศ.2568 · Google Sheets</div>
+          </div>
+          <svg style="width:18px;height:18px;color:var(--text3);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#6B7A8D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </div>
+      </a>
+
+      <!-- ตัวชี้วัดเฉพาะ KPI คลินิก -->
+      <a href="https://docs.google.com/spreadsheets/d/1HseVgdxVicYjJhimpDtVr-7OpVi-5Em8yXxrz_cM60c/edit?usp=sharing" target="_blank" style="text-decoration:none">
+        <div style="background:var(--white);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:2rem 1.75rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:1.25rem;transition:box-shadow .2s,transform .2s" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,82,165,.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--shadow)';this.style.transform=''">
+          <div style="width:52px;height:52px;background:#f0faf6;border-radius:12px;display:flex;align-items:center;justify-content:flex-shrink:0">
+            <svg style="width:28px;height:28px;margin:12px" viewBox="0 0 24 24" fill="none" stroke="#0A7C63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:11px;color:var(--text3);font-weight:500;margin-bottom:3px">KPI 7 คลินิก OPD</div>
+            <div style="font-size:16px;font-weight:700;color:#0A7C63;margin-bottom:4px">ตัวชี้วัดเฉพาะ</div>
+            <div style="font-size:12px;color:var(--text3)">DM, HT, Warfarin, CKD, Asthma, COPD, Smoking · Google Sheets</div>
+          </div>
+          <svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="#6B7A8D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- AWARDS -->
+<div class="page" id="page-awards">
+  <div class="wrap">
+    <div class="sec-eyebrow">รางวัลและผลงานเด่น</div>
+    <div class="sec-title">ความสำเร็จและความภาคภูมิใจ</div>
+    <div class="award-grid" style="margin-bottom:1.5rem">
+      <div class="acard"><div class="acard-num">รางวัลที่ 01</div><div class="acard-title">รางวัลคุณภาพบริการ</div><div class="acard-sub">ระดับจังหวัด ปี 2567</div></div>
+      <div class="acard"><div class="acard-num">รางวัลที่ 02</div><div class="acard-title">Hospital Accreditation (HA)</div><div class="acard-sub">โรงพยาบาลมาตรฐาน</div></div>
+      <div class="acard"><div class="acard-num">รางวัลที่ 03</div><div class="acard-title">คลินิก NCD คุณภาพ ระดับดีเยี่ยม</div><div class="acard-sub">ระดับเขต ปี 2567</div></div>
+    </div>
+    <div class="vcard"><h3>เพิ่มเติม</h3><p>สามารถอัปโหลดรูปภาพรางวัลเพิ่มเติมได้ในหน้าเจ้าหน้าที่ → เมนูเอกสาร → หมวดหมู่ "รางวัล"</p></div>
+  </div>
+</div>
+
+<!-- NEWS -->
+<div class="page" id="page-news">
+  <div class="wrap">
+    <div class="sec-eyebrow">ข่าวสาร</div>
+    <div class="sec-title">ประชาสัมพันธ์และผลการดำเนินการ</div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="showTab('tn-pr',this)">ข่าวประชาสัมพันธ์</button>
+      <button class="tab-btn" onclick="showTab('tn-act',this)">กิจกรรมและโครงการ</button>
+      <button class="tab-btn" onclick="showTab('tn-meet',this)">รายงานการประชุม</button>
+    </div>
+    <div class="tab-pane active" id="tn-pr"><div class="news-grid" id="news-pr"><div class="news-empty">กำลังโหลด...</div></div></div>
+    <div class="tab-pane" id="tn-act"><div class="news-grid" id="news-act"><div class="news-empty">กำลังโหลด...</div></div></div>
+    <div class="tab-pane" id="tn-meet"><div class="news-grid" id="news-meet"><div class="news-empty">กำลังโหลด...</div></div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-in">
+    <img class="footer-logo" src="component/logo.gif" alt="โรงพยาบาลบึงสามัคคี">
+    <div>
+      <div class="fn">งานการพยาบาลผู้ป่วยนอก กลุ่มงานการพยาบาล โรงพยาบาลบึงสามัคคี</div>
+      <div class="fd">อ.บึงสามัคคี จ.กำแพงเพชร · เปิดบริการ จันทร์–ศุกร์ 08.30–16.30 น.</div>
+    </div>
+    <div class="fr">© 2568</div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
