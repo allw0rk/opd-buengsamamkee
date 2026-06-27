@@ -364,7 +364,6 @@ function renderQAStaffForm() {
 
 /* ── NAV ── */
 function showPage(id, btn) {
-  closeStaffQaDropdown();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
@@ -373,91 +372,6 @@ function showPage(id, btn) {
   if (id === 'docs') loadDocs(currentDocCat);
   if (id === 'news') loadNews();
   if (id === 'entry') wReset();
-}
-
-/* ── STAFF QA DROPDOWN ── */
-document.addEventListener('click', function(e) {
-  const btn = document.getElementById('nb-qa-ref');
-  const menu = document.getElementById('staff-qa-menu');
-  if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) closeStaffQaDropdown();
-});
-function toggleStaffQaDropdown(e) {
-  e.stopPropagation();
-  const menu = document.getElementById('staff-qa-menu');
-  const btn = document.getElementById('nb-qa-ref');
-  const ch = document.getElementById('staff-qa-chevron');
-  if (!menu) return;
-  const open = menu.style.display === 'block';
-  if (open) { closeStaffQaDropdown(); return; }
-  const rect = btn.getBoundingClientRect();
-  menu.style.top = (rect.bottom + 6) + 'px';
-  menu.style.left = rect.left + 'px';
-  menu.style.display = 'block';
-  if (ch) ch.style.transform = 'rotate(180deg)';
-}
-function closeStaffQaDropdown() {
-  const menu = document.getElementById('staff-qa-menu');
-  if (menu) menu.style.display = 'none';
-  const ch = document.getElementById('staff-qa-chevron');
-  if (ch) ch.style.transform = '';
-}
-
-/* ── STAFF QA REF PAGE ── */
-const _STAFF_QA_MODS = {
-  1:{title:'การนำองค์กร',                       emoji:'🏛️', bg:'linear-gradient(160deg,#1A0533,#5B21B6)', glow:'0 0 0 3px rgba(192,132,252,.4),0 0 40px rgba(139,92,246,.5)', glowBg:'rgba(139,92,246,.2)'},
-  2:{title:'กลยุทธ์',                             emoji:'🎯', bg:'linear-gradient(160deg,#001F4D,#0052A5)', glow:'0 0 0 3px rgba(147,197,253,.4),0 0 40px rgba(59,130,246,.5)',  glowBg:'rgba(59,130,246,.2)'},
-  3:{title:'ผู้ใช้บริการ',                        emoji:'🤝', bg:'linear-gradient(160deg,#022C22,#065F46)', glow:'0 0 0 3px rgba(110,231,183,.4),0 0 40px rgba(16,185,129,.5)', glowBg:'rgba(16,185,129,.2)'},
-  4:{title:'การวัด วิเคราะห์ และการจัดการความรู้',emoji:'📊', bg:'linear-gradient(160deg,#451A03,#92400E)', glow:'0 0 0 3px rgba(252,211,77,.4),0 0 40px rgba(245,158,11,.5)',  glowBg:'rgba(245,158,11,.2)'},
-  5:{title:'บุคลากร',                             emoji:'👩‍⚕️',bg:'linear-gradient(160deg,#0F172A,#1E3A5F)', glow:'0 0 0 3px rgba(125,211,252,.4),0 0 40px rgba(14,165,233,.5)', glowBg:'rgba(14,165,233,.2)'},
-  6:{title:'การปฏิบัติการพยาบาล',                emoji:'💊', bg:'linear-gradient(160deg,#3B0014,#9F1239)', glow:'0 0 0 3px rgba(253,164,175,.4),0 0 40px rgba(244,63,94,.5)',   glowBg:'rgba(244,63,94,.2)'},
-  7:{title:'ผลลัพธ์ทางการพยาบาล',               emoji:'📈', bg:'linear-gradient(160deg,#1C0A00,#713F12)', glow:'0 0 0 3px rgba(253,211,77,.4),0 0 40px rgba(217,119,6,.5)',   glowBg:'rgba(217,119,6,.2)'},
-};
-const _STAFF_QA_BULLET = ['','#8B5CF6','#3B82F6','#10B981','#F59E0B','#0EA5E9','#F43F5E','#D97706'];
-
-async function showStaffQaRef(num) {
-  closeStaffQaDropdown();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-qa-ref').classList.add('active');
-  document.getElementById('nb-qa-ref').classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  const m = _STAFF_QA_MODS[num];
-  document.getElementById('staff-qa-ref-title').textContent = 'หมวด ' + num + ' · ' + m.title;
-  const panel = document.getElementById('staff-qa-left');
-  panel.style.background = m.bg;
-  const glow = document.getElementById('staff-qa-glow');
-  glow.textContent = m.emoji;
-  glow.style.background = m.glowBg;
-  glow.style.boxShadow = m.glow;
-  document.getElementById('staff-qa-badge').textContent = 'หมวด ' + num;
-  document.getElementById('staff-qa-name').textContent = m.title;
-
-  const listEl = document.getElementById('staff-qa-doc-list');
-  listEl.innerHTML = '<div class="news-empty">กำลังโหลด...</div>';
-  try {
-    const snap = await db.collection('documents').where('qaModule', '==', String(num)).get();
-    if (snap.empty) {
-      listEl.innerHTML = '<div class="news-empty">ยังไม่มีเอกสารในหมวดนี้</div>';
-      return;
-    }
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (b.addedAt?.seconds || 0) - (a.addedAt?.seconds || 0));
-    const ftLabel = { pdf: 'PDF', word: 'Word', excel: 'Excel', link: 'Link' };
-    const bullet = _STAFF_QA_BULLET[num];
-    listEl.innerHTML = docs.map(doc => {
-      const ft = doc.fileType || 'link';
-      const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
-      return `<a href="${esc(doc.url || '#')}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:.55rem 0;border-bottom:1px solid #F1F5F9;text-decoration:none;color:inherit">
-        <div style="width:9px;height:9px;border-radius:2px;background:${bullet};opacity:.75;flex-shrink:0"></div>
-        <span style="font-size:14px;font-weight:600;color:#3B5BDB;flex:1;line-height:1.4">${esc(doc.title || 'ไม่มีชื่อ')}</span>
-        <span style="font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;background:#F1F5F9;color:#64748B">${ftLabel[ft] || ft}</span>
-      </a>`;
-    }).join('');
-  } catch (err) {
-    listEl.innerHTML = '<div class="news-empty">โหลดไม่สำเร็จ</div>';
-    console.error(err);
-  }
 }
 
 /* ── TOAST ── */
