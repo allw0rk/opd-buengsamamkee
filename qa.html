@@ -4,7 +4,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>มาตรฐาน QA — งานการพยาบาลผู้ป่วยนอก</title>
+<style>
+:root{--primary:#0052A5;--primary-dark:#001F4D;--teal:#0D9488;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#F0F4F8;color:#1E293B;min-height:100vh}
+/* ── NAV ── */
+nav{background:var(--primary-dark);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;gap:16px;height:56px}
+.nav-logo{font-size:15px;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap}
+.nav-logo span{color:rgba(255,255,255,.55);font-weight:400}
+.nav-back{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;transition:all .2s;cursor:pointer;font-family:inherit}
+.nav-back:hover{background:rgba(255,255,255,.18);color:#fff}
+/* ── WRAP ── */
+.wrap{max-width:1000px;margin:0 auto;padding:2rem 1.5rem}
+/* ── PAGE TITLE ── */
+.pg-eyebrow{font-size:11px;font-weight:600;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem}
+.pg-title{font-size:26px;font-weight:800;color:var(--primary-dark);margin-bottom:.35rem}
+.pg-sub{font-size:13.5px;color:#64748B;margin-bottom:1.75rem}
+/* ── MODULE TABS ── */
+.mod-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.75rem}
+.mod-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:.65rem 1rem;border-radius:10px;border:2px solid transparent;background:#fff;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:var(--shadow);min-width:88px}
+.mod-btn .mb-num{font-size:11px;font-weight:700;color:#94A3B8}
+.mod-btn .mb-lbl{font-size:12px;font-weight:600;color:#334155;text-align:center;line-height:1.3}
+.mod-btn.active{border-color:var(--primary);background:var(--primary)}
+.mod-btn.active .mb-num{color:rgba(255,255,255,.6)}
+.mod-btn.active .mb-lbl{color:#fff}
+/* ── DETAIL CARD ── */
+.qa-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:none}
+.qa-card.visible{display:flex}
+.qa-left{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.25rem;gap:14px}
+.qa-left .ql-badge{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px}
+.qa-left .ql-num{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.04em}
+.qa-left .ql-title{font-size:17px;font-weight:800;color:#fff;text-align:center;line-height:1.3}
+.qa-right{flex:1;padding:1.75rem 2rem;border-left:1px solid #E8EDF3;min-height:320px}
+.qa-right h3{font-size:14px;font-weight:700;color:#64748B;letter-spacing:.04em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.qa-right h3::after{content:'';flex:1;height:1px;background:#E8EDF3}
+/* ── DOC LIST ── */
+.doc-list{display:flex;flex-direction:column;gap:2px}
+.doc-row{display:flex;align-items:center;gap:12px;padding:.6rem .75rem;border-radius:8px;transition:background .15s;text-decoration:none;color:inherit}
+.doc-row:hover{background:#F1F5F9}
+.doc-row .dr-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.doc-row .dr-icon.pdf{background:#FEE2E2}.doc-row .dr-icon.word{background:#DBEAFE}.doc-row .dr-icon.excel{background:#D1FAE5}.doc-row .dr-icon.link{background:#EDE9FE}
+.doc-row .dr-name{font-size:14px;font-weight:600;color:var(--primary);flex:1}
+.doc-row .dr-type{font-size:11px;font-weight:700;color:#94A3B8;letter-spacing:.04em;text-transform:uppercase}
+.doc-empty{color:#94A3B8;font-size:13.5px;padding:1rem .75rem;display:flex;align-items:center;gap:10px}
+.qa-loading{color:#94A3B8;font-size:13.5px;padding:1rem .75rem}
+/* ── COLORS PER MODULE ── */
+.mc1{background:linear-gradient(135deg,#5B21B6,#8B5CF6)}.mc2{background:linear-gradient(135deg,#0052A5,#3B82F6)}.mc3{background:linear-gradient(135deg,#065F46,#10B981)}.mc4{background:linear-gradient(135deg,#92400E,#F59E0B)}.mc5{background:linear-gradient(135deg,#1E3A5F,#0369A1)}.mc6{background:linear-gradient(135deg,#9F1239,#F43F5E)}.mc7{background:linear-gradient(135deg,#713F12,#D97706)}
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .qa-card.visible{flex-direction:column}
+  .qa-left{width:100%;flex-direction:row;padding:1.25rem;gap:16px}
+  .qa-left .ql-badge{width:60px;height:60px;font-size:26px}
+  .qa-left .ql-title{font-size:15px;text-align:left}
+  .qa-right{border-left:none;border-top:1px solid #E8EDF3;padding:1.25rem}
+  .mod-btn{min-width:70px;padding:.55rem .75rem}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">OPD <span>บึงสามัคคี</span></a>
+    <div style="flex:1"></div>
+    <a class="nav-back" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      กลับหน้าหลัก
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="pg-eyebrow">มาตรฐานคุณภาพการพยาบาล</div>
+  <div class="pg-title">QA 7 มิติ</div>
+  <div class="pg-sub">กองการพยาบาล สำนักงานปลัดกระทรวงสาธารณสุข พ.ศ. 2568</div>
+
+  <!-- Module Tabs -->
+  <div class="mod-tabs" id="mod-tabs">
+    <button class="mod-btn" onclick="selectModule(1,this)"><span class="mb-num">หมวด 1</span><span class="mb-lbl">การนำองค์กร</span></button>
+    <button class="mod-btn" onclick="selectModule(2,this)"><span class="mb-num">หมวด 2</span><span class="mb-lbl">กลยุทธ์</span></button>
+    <button class="mod-btn" onclick="selectModule(3,this)"><span class="mb-num">หมวด 3</span><span class="mb-lbl">ผู้ใช้บริการ</span></button>
+    <button class="mod-btn" onclick="selectModule(4,this)"><span class="mb-num">หมวด 4</span><span class="mb-lbl">การวัด วิเคราะห์ และจัดการความรู้</span></button>
+    <button class="mod-btn" onclick="selectModule(5,this)"><span class="mb-num">หมวด 5</span><span class="mb-lbl">บุคลากร</span></button>
+    <button class="mod-btn" onclick="selectModule(6,this)"><span class="mb-num">หมวด 6</span><span class="mb-lbl">การปฏิบัติการพยาบาล</span></button>
+    <button class="mod-btn" onclick="selectModule(7,this)"><span class="mb-num">หมวด 7</span><span class="mb-lbl">ผลลัพธ์ทางการพยาบาล</span></button>
+  </div>
+
+  <!-- Detail Card -->
+  <div class="qa-card" id="qa-card">
+    <div class="qa-left" id="qa-left">
+      <div class="ql-badge" id="ql-badge"></div>
+      <div>
+        <div class="ql-num" id="ql-num"></div>
+        <div class="ql-title" id="ql-title"></div>
+      </div>
+    </div>
+    <div class="qa-right">
+      <h3>เอกสารอ้างอิง</h3>
+      <div id="qa-doc-list"><div class="qa-loading">กำลังโหลด...</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script>
+const FC={apiKey:"AIzaSyAqMraTjOyJVO-G1B7j_rmCeim0LEuNERk",authDomain:"opd-buengsamamkee.firebaseapp.com",projectId:"opd-buengsamamkee",storageBucket:"opd-buengsamamkee.firebasestorage.app",messagingSenderId:"444798882247",appId:"1:444798882247:web:05f0d90d6eded5f6a4c9e2"};
+firebase.initializeApp(FC);
+const db = firebase.firestore();
+
+const MODULES = {
+  1:{title:'การนำองค์กร',   emoji:'🏛️', cls:'mc1'},
+  2:{title:'กลยุทธ์',        emoji:'🎯', cls:'mc2'},
+  3:{title:'ผู้ใช้บริการ',   emoji:'🤝', cls:'mc3'},
+  4:{title:'การวัด วิเคราะห์\nและจัดการความรู้', emoji:'📊', cls:'mc4'},
+  5:{title:'บุคลากร',        emoji:'👩‍⚕️', cls:'mc5'},
+  6:{title:'การปฏิบัติการ\nพยาบาล', emoji:'💊', cls:'mc6'},
+  7:{title:'ผลลัพธ์ทาง\nการพยาบาล', emoji:'📈', cls:'mc7'},
+};
+
+let currentMod = 0;
+
+async function selectModule(num, btn) {
+  if (currentMod === num) return;
+  currentMod = num;
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const m = MODULES[num];
+  const card = document.getElementById('qa-card');
+  const left = document.getElementById('qa-left');
+  left.className = 'qa-left ' + m.cls;
+  document.getElementById('ql-badge').textContent = m.emoji;
+  document.getElementById('ql-num').textContent = 'หมวด ' + num;
+  document.getElementById('ql-title').textContent = m.title.replace('\\n', ' ');
+  card.className = 'qa-card visible';
+
+  const listEl = document.getElementById('qa-doc-list');
+  listEl.innerHTML = '<div class="qa-loading">กำลังโหลด...</div>';
+
+  try {
+    const snap = await db.collection('documents').where('qaModule', '==', String(num)).get();
+    if (snap.empty) {
+      listEl.innerHTML = '<div class="doc-empty"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ยังไม่มีเอกสารในหมวดนี้</div>';
+      return;
+    }
+    const docs = snap.docs.map(d => ({id:d.id,...d.data()}))
+      .sort((a,b) => (b.addedAt?.seconds||0)-(a.addedAt?.seconds||0));
+    const icons = {pdf:'📄',word:'📝',excel:'📊',link:'🔗'};
+    listEl.innerHTML = '<div class="doc-list">' + docs.map(doc => {
+      const ft = ['pdf','word','excel','link'].includes(doc.fileType) ? doc.fileType : 'link';
+      const icon = icons[ft] || '📄';
+      return `<a class="doc-row" href="${esc(doc.url||'#')}" target="_blank" rel="noopener">
+        <div class="dr-icon ${ft}">${icon}</div>
+        <span class="dr-name">${esc(doc.title||'ไม่มีชื่อ')}</span>
+        <span class="dr-type">${ft.toUpperCase()}</span>
+      </a>`;
+    }).join('') + '</div>';
+  } catch(err) {
+    listEl.innerHTML = '<div class="doc-empty">โหลดไม่สำเร็จ</div>';
+    console.error(err);
+  }
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// Auto-select from URL param ?m=1
+window.addEventListener('load', () => {
+  const m = parseInt(new URLSearchParams(location.search).get('m')) || 1;
+  const btn = document.querySelectorAll('.mod-btn')[m-1];
+  if (btn) selectModule(m, btn);
+});
+</script>
 </body>
 </html>

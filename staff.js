@@ -1293,6 +1293,7 @@ function openDocModal(editDoc) {
   const defaultSub = Object.keys(DOC_CATS[currentDocCat]?.subs || {})[0] || 'wi_instruction';
   document.getElementById('doc-cat-input').value = editDoc?.category || defaultSub;
   document.getElementById('doc-desc-input').value = editDoc?.description || '';
+  const qaEl = document.getElementById('doc-qa-module'); if(qaEl) qaEl.value = editDoc?.qaModule || '';
   document.getElementById('doc-uploaded-url').value = '';
   clearDocFile();
   if (editDoc?.url) {
@@ -1356,8 +1357,9 @@ async function saveDoc() {
     if (!url) { toast('กรุณากรอก URL','err'); return; }
   }
 
+  const qaModule = document.getElementById('doc-qa-module')?.value || '';
   const data = { title, category: subcat, fileType, url, description: desc,
-                 addedBy: currentUser, addedAt: new Date() };
+                 qaModule: qaModule || null, addedBy: currentUser, addedAt: new Date() };
   try {
     if (editId) {
       await db.collection('documents').doc(editId).update(data);
