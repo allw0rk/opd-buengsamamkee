@@ -1300,8 +1300,8 @@ function qdHandleFile(input) {
   document.getElementById('qd-file-name').textContent = file.name;
   document.getElementById('qd-file-size').textContent = (file.size / 1024).toFixed(0) + ' KB';
   document.getElementById('qd-file-chosen').style.display = 'flex';
+  document.getElementById('qd-dropzone').style.display = 'none';
   document.getElementById('qd-uploaded-url').value = '';
-  document.getElementById('qd-url').value = '';
   const ftMap = { pdf: 'pdf', doc: 'word', docx: 'word', xls: 'excel', xlsx: 'excel' };
   const ft = document.getElementById('qd-filetype'); if(ft) ft.value = ftMap[ext] || 'pdf';
 }
@@ -1310,6 +1310,7 @@ function qdClearFile() {
   document.getElementById('qd-file-input').value = '';
   document.getElementById('qd-uploaded-url').value = '';
   document.getElementById('qd-file-chosen').style.display = 'none';
+  document.getElementById('qd-dropzone').style.display = 'flex';
   document.getElementById('qd-upload-bar').style.display = 'none';
 }
 
@@ -1328,7 +1329,7 @@ async function qdSave() {
   const btn = document.getElementById('qd-save-btn');
   btn.disabled = true;
 
-  let url = document.getElementById('qd-url').value.trim() || document.getElementById('qd-uploaded-url').value;
+  let url = document.getElementById('qd-uploaded-url').value;
   const file = document.getElementById('qd-file-input').files[0];
 
   if (!url && file) {
@@ -1345,7 +1346,7 @@ async function qdSave() {
     document.getElementById('qd-upload-bar').style.display = 'none';
   }
 
-  if (!url) { toast('กรุณาใส่ลิงก์หรืออัปโหลดไฟล์', 'err'); btn.disabled = false; return; }
+  if (!url) { toast('กรุณาเลือกไฟล์', 'err'); btn.disabled = false; return; }
 
   const payload = {
     title,
