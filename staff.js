@@ -1290,70 +1290,25 @@ function clearDocFile() {
 /* ── QA DOC PAGE ── */
 function qdModuleChange() {}
 
-function qdHandleFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 20 * 1024 * 1024) { toast('ไฟล์ใหญ่เกิน 20MB', 'err'); input.value = ''; return; }
-  const icons = { pdf: '📕', doc: '📘', docx: '📘', xls: '📗', xlsx: '📗' };
-  const ext = file.name.split('.').pop().toLowerCase();
-  document.getElementById('qd-file-icon').textContent = icons[ext] || '📄';
-  document.getElementById('qd-file-name').textContent = file.name;
-  document.getElementById('qd-file-size').textContent = (file.size / 1024).toFixed(0) + ' KB';
-  document.getElementById('qd-file-chosen').style.display = 'flex';
-  document.getElementById('qd-dropzone').style.display = 'none';
-  document.getElementById('qd-uploaded-url').value = '';
-  const ftMap = { pdf: 'pdf', doc: 'word', docx: 'word', xls: 'excel', xlsx: 'excel' };
-  const catSel = document.getElementById('qd-cat');
-}
-
-function qdClearFile() {
-  document.getElementById('qd-file-input').value = '';
-  document.getElementById('qd-uploaded-url').value = '';
-  document.getElementById('qd-file-chosen').style.display = 'none';
-  document.getElementById('qd-dropzone').style.display = 'flex';
-  document.getElementById('qd-upload-bar').style.display = 'none';
-}
-
 function qdReset() {
-  ['qd-module','qd-title','qd-desc'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-  qdClearFile();
+  ['qd-module','qd-title','qd-url','qd-desc'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  const ft = document.getElementById('qd-filetype'); if(ft) ft.value = 'pdf';
 }
 
 async function qdSave() {
   const module = document.getElementById('qd-module').value;
   const title  = document.getElementById('qd-title').value.trim();
-  const fileInput = document.getElementById('qd-file-input');
-  const preUrl = document.getElementById('qd-uploaded-url').value;
+  const url    = document.getElementById('qd-url').value.trim();
   if (!module) { toast('กรุณาเลือกหมวด QA', 'err'); return; }
   if (!title)  { toast('กรุณากรอกชื่อเอกสาร', 'err'); return; }
-
-  let url = preUrl;
-  const file = fileInput.files[0];
-  if (!url && !file) { toast('กรุณาเลือกไฟล์', 'err'); return; }
-
+  if (!url)    { toast('กรุณากรอกลิงก์เอกสาร', 'err'); return; }
   const btn = document.getElementById('qd-save-btn');
   btn.disabled = true;
-
-  if (file && !url) {
-    document.getElementById('qd-upload-bar').style.display = '';
-    try {
-      url = await qdUploadFile(file);
-      document.getElementById('qd-uploaded-url').value = url;
-    } catch(e) {
-      toast('อัปโหลดไฟล์ไม่สำเร็จ: ' + e.message, 'err');
-      btn.disabled = false;
-      document.getElementById('qd-upload-bar').style.display = 'none';
-      return;
-    }
-  }
-
-  const ext = file ? file.name.split('.').pop().toLowerCase() : '';
-  const ftMap = { pdf: 'pdf', doc: 'word', docx: 'word', xls: 'excel', xlsx: 'excel' };
   const payload = {
     title,
     category:    'qa',
     description: document.getElementById('qd-desc').value.trim(),
-    fileType:    ftMap[ext] || 'link',
+    fileType:    document.getElementById('qd-filetype').value,
     url,
     qaModule:    module,
     addedBy:     currentUser || 'staff',
@@ -1368,7 +1323,6 @@ async function qdSave() {
     console.error(err);
   }
   btn.disabled = false;
-  document.getElementById('qd-upload-bar').style.display = 'none';
 }
 function openDocModal(editDoc, showQa = false) {
   document.getElementById('doc-modal-title').textContent = editDoc ? 'แก้ไขเอกสาร' : 'เพิ่มเอกสาร';
