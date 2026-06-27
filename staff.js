@@ -1167,6 +1167,7 @@ async function loadDocs(cat) {
   try {
     const snap = await db.collection('documents').get();
     allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(d => d.category !== 'qa')
       .sort((a,b) => {
         const ta = a.addedAt?.seconds || a.addedAt?.toMillis?.() || 0;
         const tb = b.addedAt?.seconds || b.addedAt?.toMillis?.() || 0;
@@ -1315,7 +1316,6 @@ function qdClearFile() {
 
 function qdReset() {
   ['qd-module','qd-title','qd-desc'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-  const cat = document.getElementById('qd-cat'); if(cat) cat.value = 'wi_instruction';
   qdClearFile();
 }
 
@@ -1350,7 +1350,7 @@ async function qdSave() {
   const ftMap = { pdf: 'pdf', doc: 'word', docx: 'word', xls: 'excel', xlsx: 'excel' };
   const payload = {
     title,
-    category:    document.getElementById('qd-cat').value,
+    category:    'qa',
     description: document.getElementById('qd-desc').value.trim(),
     fileType:    ftMap[ext] || 'link',
     url,
