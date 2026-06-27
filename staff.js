@@ -1286,7 +1286,10 @@ function clearDocFile() {
   document.getElementById('doc-uploaded-url').value = '';
 }
 
-function openDocModal(editDoc) {
+function openQaDocModal() {
+  openDocModal(null, true);
+}
+function openDocModal(editDoc, showQa = false) {
   document.getElementById('doc-modal-title').textContent = editDoc ? 'แก้ไขเอกสาร' : 'เพิ่มเอกสาร';
   document.getElementById('doc-edit-id').value = editDoc?.id || '';
   document.getElementById('doc-title-input').value = editDoc?.title || '';
@@ -1294,6 +1297,8 @@ function openDocModal(editDoc) {
   document.getElementById('doc-cat-input').value = editDoc?.category || defaultSub;
   document.getElementById('doc-desc-input').value = editDoc?.description || '';
   const qaEl = document.getElementById('doc-qa-module'); if(qaEl) qaEl.value = editDoc?.qaModule || '';
+  const qaField = document.getElementById('doc-qa-module-field');
+  if (qaField) qaField.style.display = (showQa || editDoc?.qaModule) ? 'flex' : 'none';
   document.getElementById('doc-uploaded-url').value = '';
   clearDocFile();
   if (editDoc?.url) {
