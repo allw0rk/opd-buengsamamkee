@@ -83,13 +83,13 @@
 
 <!-- QA DROPDOWN -->
 <div id="nav-qa-menu" style="display:none;position:fixed;background:#001F4D;border:1px solid rgba(255,255,255,.15);border-radius:10px;min-width:260px;z-index:9999;box-shadow:0 16px 40px rgba(0,0,0,.4);overflow:hidden;animation:dropIn .18s ease both">
-  <button onclick="window.location.href='qa.html?m=1'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span><span>การนำองค์กร</span></button>
-  <button onclick="window.location.href='qa.html?m=2'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span><span>กลยุทธ์</span></button>
-  <button onclick="window.location.href='qa.html?m=3'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span><span>ผู้ใช้บริการ</span></button>
-  <button onclick="window.location.href='qa.html?m=4'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span><span>การวัด วิเคราะห์ และการจัดการความรู้</span></button>
-  <button onclick="window.location.href='qa.html?m=5'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">5</span><span>บุคลากร</span></button>
-  <button onclick="window.location.href='qa.html?m=6'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">6</span><span>การปฏิบัติการพยาบาล</span></button>
-  <button onclick="window.location.href='qa.html?m=7'" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">7</span><span>ผลลัพธ์ทางการพยาบาล</span></button>
+  <button onclick="showQaPage(1)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span><span>การนำองค์กร</span></button>
+  <button onclick="showQaPage(2)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span><span>กลยุทธ์</span></button>
+  <button onclick="showQaPage(3)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span><span>ผู้ใช้บริการ</span></button>
+  <button onclick="showQaPage(4)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span><span>การวัด วิเคราะห์ และการจัดการความรู้</span></button>
+  <button onclick="showQaPage(5)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">5</span><span>บุคลากร</span></button>
+  <button onclick="showQaPage(6)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">6</span><span>การปฏิบัติการพยาบาล</span></button>
+  <button onclick="showQaPage(7)" style="display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:11px 16px;cursor:pointer;text-align:left"><span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">7</span><span>ผลลัพธ์ทางการพยาบาล</span></button>
 </div>
 
 <!-- ABOUT DROPDOWN -->
@@ -411,6 +411,29 @@
       ← กลับการบริหารหน่วยงาน
     </button>
     <div id="filtered-list"><div class="news-empty">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- QA PAGE -->
+<div class="page" id="page-qa">
+  <div class="wrap">
+    <div class="sec-eyebrow">มาตรฐานคุณภาพการพยาบาล</div>
+    <div class="sec-title" id="qa-page-title">—</div>
+    <div style="display:flex;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);min-height:340px;margin-top:1.5rem">
+      <!-- Left dark panel -->
+      <div id="qa-left-panel" style="width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.25rem;position:relative;overflow:hidden">
+        <div id="qa-glow" style="width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:1.25rem;position:relative;z-index:1"></div>
+        <div id="qa-mod-badge" style="background:rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:.3rem .9rem;font-size:12px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.05em;margin-bottom:.5rem;position:relative;z-index:1"></div>
+        <div id="qa-mod-name" style="font-size:17px;font-weight:800;color:#fff;text-align:center;line-height:1.35;text-shadow:0 2px 8px rgba(0,0,0,.5);position:relative;z-index:1"></div>
+      </div>
+      <!-- Right doc list -->
+      <div style="flex:1;background:#fff;padding:1.75rem 2rem;border-left:1px solid var(--border2)">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:10px">เอกสารอ้างอิง<div style="flex:1;height:1px;background:var(--border2)"></div></div>
+        <div id="qa-doc-list">
+          <div class="news-empty">กำลังโหลด...</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
