@@ -1337,11 +1337,12 @@ async function qdSave() {
   if (file && !url) {
     document.getElementById('qd-upload-bar').style.display = '';
     try {
-      url = await uploadDocFile(file);
+      url = await qdUploadFile(file);
       document.getElementById('qd-uploaded-url').value = url;
     } catch(e) {
-      toast('อัปโหลดไฟล์ไม่สำเร็จ', 'err');
+      toast('อัปโหลดไฟล์ไม่สำเร็จ: ' + e.message, 'err');
       btn.disabled = false;
+      document.getElementById('qd-upload-bar').style.display = 'none';
       return;
     }
   }
@@ -1472,10 +1473,23 @@ function uploadDocFile(file) {
         document.getElementById('doc-upload-status').textContent = 'กำลังอัปโหลด ' + pct + '%';
       },
       err => reject(err),
-      async () => {
-        const url = await task.snapshot.ref.getDownloadURL();
-        resolve(url);
-      }
+      async () => { resolve(await task.snapshot.ref.getDownloadURL()); }
+    );
+  });
+}
+
+function qdUploadFile(file) {
+  return new Promise((resolve, reject) => {
+    const ref = storage.ref('documents/qa/' + Date.now() + '_' + file.name);
+    const task = ref.put(file);
+    task.on('state_changed',
+      snap => {
+        const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+        document.getElementById('qd-upload-fill').style.width = pct + '%';
+        document.getElementById('qd-upload-status').textContent = 'กำลังอัปโหลด ' + pct + '%';
+      },
+      err => reject(err),
+      async () => { resolve(await task.snapshot.ref.getDownloadURL()); }
     );
   });
 }
