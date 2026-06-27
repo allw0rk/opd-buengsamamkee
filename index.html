@@ -55,17 +55,29 @@
   overflow:hidden;
   animation:dropIn .18s ease both;
 ">
-  <button onclick="showDocPage('guide')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+  <button onclick="filterDocs('manual_orient')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
     <span style="width:28px;height:28px;border-radius:6px;background:rgba(184,92,0,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📚</span>
-    <span>คู่มือ</span>
+    <span>คู่มือปฐมนิเทศ</span>
   </button>
   <button onclick="showDocPage('docs')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
     <span style="width:28px;height:28px;border-radius:6px;background:rgba(0,82,165,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📋</span>
     <span>แนวทางต่างๆ</span>
   </button>
-  <button onclick="showDocPage('forms')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
+  <button onclick="showDocPage('forms')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:13px 18px;cursor:pointer;text-align:left;transition:all .15s">
     <span style="width:28px;height:28px;border-radius:6px;background:rgba(192,57,43,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📄</span>
     <span>แบบฟอร์ม</span>
+  </button>
+  <button onclick="filterDocs('manual_plan')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:10px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(0,140,100,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📅</span>
+    <span>แผนปฏิบัติการ</span>
+  </button>
+  <button onclick="filterDocs('wi_procurement')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:10px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(200,120,0,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🛒</span>
+    <span>แผนจัดซื้อจัดจ้าง</span>
+  </button>
+  <button onclick="filterDocs('wi_annual')" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:rgba(255,255,255,.75);font-family:inherit;font-size:13px;padding:10px 18px;cursor:pointer;text-align:left;transition:all .15s">
+    <span style="width:28px;height:28px;border-radius:6px;background:rgba(180,40,40,.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📝</span>
+    <span>รายงานประจำปี</span>
   </button>
 </div>
 
@@ -359,15 +371,6 @@
       </div>
     </div>
 
-    <!-- Document shortcuts -->
-    <div class="sec-eyebrow" style="margin-top:2rem">เอกสารบริหาร</div>
-    <div class="sec-title">เข้าถึงเอกสารได้เลย</div>
-    <div class="about-docs">
-      <button class="about-doc-btn" onclick="filterDocs('manual_orient')"><span>📋</span>คู่มือปฐมนิเทศ</button>
-      <button class="about-doc-btn" onclick="filterDocs('manual_plan')"><span>📅</span>แผนปฏิบัติการ</button>
-      <button class="about-doc-btn" onclick="filterDocs('wi_procurement')"><span>🛒</span>แผนจัดซื้อจัดจ้าง</button>
-      <button class="about-doc-btn" onclick="filterDocs('wi_annual')"><span>📝</span>รายงานประจำปี</button>
-    </div>
 
   </div>
 </div>

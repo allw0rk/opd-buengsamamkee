@@ -316,7 +316,10 @@
 
           <!-- Step 1: วันที่และคลินิก -->
           <div class="wstep wstep-active" id="ws-1">
-            <div class="wfield"><label>วันที่ให้บริการ</label><input type="date" id="e-date"></div>
+            <div class="wfield"><label>วันที่ให้บริการ</label><input type="date" id="e-date" onchange="checkExistingEntry()"></div>
+            <div id="edit-banner" style="display:none;background:#FFF7E6;border:1.5px solid #F59E0B;border-radius:8px;padding:.65rem 1rem;margin-bottom:.5rem;font-size:13px;color:#92400E;align-items:center;gap:8px">
+              <span>✏️</span><span>พบข้อมูลวันที่ <b id="edit-banner-date"></b> แล้ว — กำลังแก้ไขข้อมูลเดิม</span>
+            </div>
             <div class="wfield"><label>คลินิก</label>
               <select id="e-clinic">
                 <option value="">— เลือกคลินิก —</option>

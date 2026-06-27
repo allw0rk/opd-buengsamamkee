@@ -51,6 +51,55 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+/* ── EDIT MODE ── */
+let _editDocId = null;
+
+async function checkExistingEntry() {
+  const dateStr = document.getElementById('e-date').value;
+  const banner = document.getElementById('edit-banner');
+  const btn = document.getElementById('btn-entry');
+  if (!dateStr) {
+    _editDocId = null;
+    if (banner) banner.style.display = 'none';
+    if (btn) btn.textContent = 'บันทึกข้อมูล';
+    return;
+  }
+  try {
+    const snap = await db.collection('entries').where('date', '==', dateStr).get();
+    if (!snap.empty) {
+      const doc = snap.docs[0];
+      _editDocId = doc.id;
+      const d = doc.data();
+      const sv = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+      sv('e-clinic', d.clinic);
+      sv('e-doctor', d.doctor); sv('e-nurse', d.nurse); sv('e-helper', d.helper); sv('e-clerk', d.clerk);
+      sv('e-count', d.count); sv('e-appt', d.appt); sv('e-walkin', d.walkin);
+      sv('e-admit', d.admit); sv('e-refer', d.refer); sv('e-tele', d.tele);
+      sv('e-screen', d.screen); sv('e-history', d.history);
+      sv('e-vision', d.vision); sv('e-eye', d.eye); sv('e-ultrasound', d.ultrasound);
+      sv('e-pelvic', d.pelvic); sv('e-special', d.special); sv('e-wound', d.wound);
+      sv('e-inject', d.inject); sv('e-ekg', d.ekg); sv('e-dtx', d.dtx); sv('e-other-act', d.otheract);
+      sv('e-edu-ind', d.eduInd); sv('e-edu-grp', d.eduGrp); sv('e-rights', d.rights);
+      sv('e-appt-out', d.apptOut); sv('e-refer-form', d.referForm);
+      sv('e-followup', d.followup); sv('e-counsel', d.counsel);
+      sv('e-incident-flag', d.incidentFlag || 'ไม่มี'); sv('e-incident-detail', d.incidentDetail);
+      sv('e-note', d.note);
+      updateProdPreview();
+      if (banner) {
+        const [y, m, dd] = dateStr.split('-');
+        const bDate = document.getElementById('edit-banner-date');
+        if (bDate) bDate.textContent = dd+'/'+m+'/'+y;
+        banner.style.display = 'flex';
+      }
+      if (btn) btn.textContent = 'บันทึกการแก้ไข';
+    } else {
+      _editDocId = null;
+      if (banner) banner.style.display = 'none';
+      if (btn) btn.textContent = 'บันทึกข้อมูล';
+    }
+  } catch(err) { console.error('checkExistingEntry:', err); }
+}
+
 /* ── WIZARD ── */
 let _wStep = 1;
 let _wDir = 1;
@@ -778,52 +827,33 @@ async function submitEntry(e) {
   const gv = id => { const el = document.getElementById(id); return el ? el.value : ''; };
   const gn = id => { const el = document.getElementById(id); return el && el.value !== '' ? Number(el.value) : null; };
   try {
-    await db.collection('entries').add({
+    const payload = {
       date: gv('e-date'),
       clinic: gv('e-clinic'),
-      // บุคลากร
-      doctor: gn('e-doctor'),
-      nurse: gn('e-nurse'),
-      helper: gn('e-helper'),
-      clerk: gn('e-clerk'),
-      // สถิติผู้รับบริการ
-      count: gn('e-count') || 0,
-      appt: gn('e-appt'),
-      walkin: gn('e-walkin'),
-      admit: gn('e-admit'),
-      refer: gn('e-refer'),
-      tele: gn('e-tele'),
-      // กิจกรรม 4.1
-      screen: gn('e-screen'),
-      history: gn('e-history'),
-      // กิจกรรม 4.2
-      vision: gn('e-vision'),
-      eye: gn('e-eye'),
-      ultrasound: gn('e-ultrasound'),
-      pelvic: gn('e-pelvic'),
-      special: gn('e-special'),
-      wound: gn('e-wound'),
-      inject: gn('e-inject'),
-      ekg: gn('e-ekg'),
-      dtx: gn('e-dtx'),
-      otheract: gn('e-other-act'),
-      // กิจกรรม 4.3
-      eduInd: gn('e-edu-ind'),
-      eduGrp: gn('e-edu-grp'),
-      rights: gn('e-rights'),
-      apptOut: gn('e-appt-out'),
-      referForm: gn('e-refer-form'),
-      followup: gn('e-followup'),
-      counsel: gn('e-counsel'),
-      // เหตุการณ์
+      doctor: gn('e-doctor'), nurse: gn('e-nurse'), helper: gn('e-helper'), clerk: gn('e-clerk'),
+      count: gn('e-count') || 0, appt: gn('e-appt'), walkin: gn('e-walkin'),
+      admit: gn('e-admit'), refer: gn('e-refer'), tele: gn('e-tele'),
+      screen: gn('e-screen'), history: gn('e-history'),
+      vision: gn('e-vision'), eye: gn('e-eye'), ultrasound: gn('e-ultrasound'),
+      pelvic: gn('e-pelvic'), special: gn('e-special'), wound: gn('e-wound'),
+      inject: gn('e-inject'), ekg: gn('e-ekg'), dtx: gn('e-dtx'), otheract: gn('e-other-act'),
+      eduInd: gn('e-edu-ind'), eduGrp: gn('e-edu-grp'), rights: gn('e-rights'),
+      apptOut: gn('e-appt-out'), referForm: gn('e-refer-form'),
+      followup: gn('e-followup'), counsel: gn('e-counsel'),
       incidentFlag: gv('e-incident-flag') || 'ไม่มี',
       incidentDetail: gv('e-incident-detail') || null,
-      // ปัญหา
       note: gv('e-note') || null,
       userName: currentUser,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('บันทึกข้อมูลสำเร็จ ✓');
+    };
+    if (_editDocId) {
+      payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('entries').doc(_editDocId).set(payload);
+      toast('แก้ไขข้อมูลสำเร็จ ✓');
+    } else {
+      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('entries').add(payload);
+      toast('บันทึกข้อมูลสำเร็จ ✓');
+    }
     clearEntry();
     showPage('dashboard', document.getElementById('nb-dashboard'));
     listenDashboard();
@@ -834,6 +864,11 @@ async function submitEntry(e) {
 }
 
 function clearEntry() {
+  _editDocId = null;
+  const banner = document.getElementById('edit-banner');
+  if (banner) banner.style.display = 'none';
+  const btn = document.getElementById('btn-entry');
+  if (btn) btn.textContent = 'บันทึกข้อมูล';
   const fields = ['e-clinic','e-doctor','e-nurse','e-helper','e-clerk',
     'e-count','e-appt','e-walkin','e-admit','e-refer','e-tele',
     'e-screen','e-history','e-vision','e-eye','e-ultrasound','e-pelvic','e-special',
