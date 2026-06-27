@@ -1131,37 +1131,22 @@ async function loadStaffDayStats(dateStr) {
 ═══════════════════════════════════════════════ */
 /* ── DOC CATEGORY MAP ── */
 const DOC_CATS = {
-  wi: {
-    label: 'เอกสาร / WI', accentCls: 'wi',
-    subs: {
-      wi_instruction: 'Work Instruction (WI)',
-      wi_procurement: 'แผนจัดซื้อจัดจ้าง',
-      wi_annual: 'รายงานประจำปี',
-      wi_other: 'อื่นๆ'
-    }
-  },
-  form: {
-    label: 'แบบฟอร์ม', accentCls: 'form',
-    subs: {
-      form_general: 'แบบฟอร์มทั่วไป',
-      form_incident: 'แบบฟอร์มรายงานอุบัติการณ์',
-      form_eval: 'แบบฟอร์มประเมินผล'
-    }
-  },
-  manual: {
-    label: 'คู่มือ / แนวทาง', accentCls: 'manual',
-    subs: {
-      manual_orient: 'คู่มือปฐมนิเทศ',
-      manual_plan: 'แผนปฏิบัติการ',
-      manual_guide: 'คู่มือ / แนวทางปฏิบัติ'
-    }
-  }
+  manual_orient:  { label: 'คู่มือปฐมนิเทศ',   accentCls: 'manual' },
+  wi_instruction: { label: 'แนวทางต่างๆ',       accentCls: 'wi'     },
+  form_general:   { label: 'แบบฟอร์ม',           accentCls: 'form'   },
+  manual_plan:    { label: 'แผนปฏิบัติการ',      accentCls: 'manual' },
+  wi_procurement: { label: 'แผนจัดซื้อจัดจ้าง', accentCls: 'wi'     },
+  wi_annual:      { label: 'รายงานประจำปี',       accentCls: 'wi'     },
 };
 
 function subToMainCat(sub) {
-  if (sub.startsWith('wi_'))     return 'wi';
-  if (sub.startsWith('form_'))   return 'form';
-  if (sub.startsWith('manual_')) return 'manual';
+  const map = {
+    manual_orient: 'manual_orient', manual_guide: 'wi_instruction', manual_plan: 'manual_plan',
+    wi_instruction: 'wi_instruction', wi_other: 'wi_instruction',
+    wi_procurement: 'wi_procurement', wi_annual: 'wi_annual',
+    form_general: 'form_general', form_incident: 'form_general', form_eval: 'form_general',
+  };
+  return map[sub] || sub;
   return sub;
 }
 
@@ -1172,7 +1157,7 @@ function subLabel(sub) {
   return sub;
 }
 
-let currentDocCat = 'wi';
+let currentDocCat = 'manual_orient';
 let allDocs = [];
 
 async function loadDocs(cat) {
@@ -1196,7 +1181,7 @@ async function loadDocs(cat) {
 }
 
 function updateDocBadges() {
-  ['wi','form','manual'].forEach(c => {
+  Object.keys(DOC_CATS).forEach(c => {
     const el = document.getElementById('badge-' + c);
     if (el) el.textContent = allDocs.filter(d => subToMainCat(d.category) === c).length;
   });
@@ -1218,58 +1203,37 @@ function renderDocs() {
     return;
   }
 
-  // Group by subcategory
-  const grouped = {};
+  const accentCls = DOC_CATS[currentDocCat]?.accentCls || 'wi';
   filtered.forEach(doc => {
-    const sub = doc.category || 'wi_other';
-    if (!grouped[sub]) grouped[sub] = [];
-    grouped[sub].push(doc);
-  });
-
-  const catInfo = DOC_CATS[currentDocCat] || {};
-  const subOrder = Object.keys(catInfo.subs || {});
-  const orderedKeys = subOrder.filter(k => grouped[k]).concat(Object.keys(grouped).filter(k => !subOrder.includes(k)));
-
-  orderedKeys.forEach(sub => {
-    // Section header
-    const hdr = document.createElement('div');
-    hdr.className = 'doc-sub-hdr';
-    hdr.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:6px';
-    hdr.innerHTML = `<span style="font-size:12px;font-weight:700;color:var(--text-light);letter-spacing:.05em;text-transform:uppercase">${escHtml(subLabel(sub))}</span><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:11px;color:var(--text-light)">${grouped[sub].length} รายการ</span>`;
-    grid.appendChild(hdr);
-
-    grouped[sub].forEach(doc => {
-      const icons = { pdf:'📄', word:'📝', excel:'📊', link:'🔗' };
-      const iconCls = ['pdf','word','excel','link'].includes(doc.fileType) ? doc.fileType : 'link';
-      const accentCls = catInfo.accentCls || 'manual';
-      const date = doc.addedAt?.toDate ? dateTH(doc.addedAt.toDate().toISOString().slice(0,10)) : '—';
-      const card = document.createElement('div');
-      card.className = 'doc-card';
-      card.innerHTML = `
-        <div class="doc-card-accent ${accentCls}"></div>
-        <div class="doc-card-body">
-          <div style="display:flex;align-items:flex-start;gap:12px">
-            <div class="doc-card-icon ${iconCls}">${icons[iconCls]||'📄'}</div>
-            <div style="flex:1;min-width:0">
-              <div class="doc-card-title">${escHtml(doc.title||'ไม่มีชื่อ')}</div>
-              ${doc.description ? `<div class="doc-card-desc">${escHtml(doc.description)}</div>` : ''}
-            </div>
+    const icons = { pdf:'📄', word:'📝', excel:'📊', link:'🔗' };
+    const iconCls = ['pdf','word','excel','link'].includes(doc.fileType) ? doc.fileType : 'link';
+    const date = doc.addedAt?.toDate ? dateTH(doc.addedAt.toDate().toISOString().slice(0,10)) : '—';
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.innerHTML = `
+      <div class="doc-card-accent ${accentCls}"></div>
+      <div class="doc-card-body">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div class="doc-card-icon ${iconCls}">${icons[iconCls]||'📄'}</div>
+          <div style="flex:1;min-width:0">
+            <div class="doc-card-title">${escHtml(doc.title||'ไม่มีชื่อ')}</div>
+            ${doc.description ? `<div class="doc-card-desc">${escHtml(doc.description)}</div>` : ''}
           </div>
-          <div class="doc-card-meta">
-            <span>เพิ่มโดย ${escHtml(doc.addedBy||'—')} · ${date}</span>
-            <div class="doc-card-actions">
-              <a href="${escHtml(doc.url||'#')}" target="_blank" rel="noopener" class="doc-open-btn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                เปิด
-              </a>
-              <button class="doc-del-btn" onclick="confirmDeleteDoc('${doc.id}')">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-              </button>
-            </div>
+        </div>
+        <div class="doc-card-meta">
+          <span>เพิ่มโดย ${escHtml(doc.addedBy||'—')} · ${date}</span>
+          <div class="doc-card-actions">
+            <a href="${escHtml(doc.url||'#')}" target="_blank" rel="noopener" class="doc-open-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              เปิด
+            </a>
+            <button class="doc-del-btn" onclick="confirmDeleteDoc('${doc.id}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
           </div>
-        </div>`;
-      grid.appendChild(card);
-    });
+        </div>
+      </div>`;
+    grid.appendChild(card);
   });
 }
 
