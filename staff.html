@@ -1278,10 +1278,11 @@
       <div class="field">
         <label>หมวดหมู่ *</label>
         <select id="doc-cat-input">
-          <optgroup label="── เอกสาร / WI ──">
+          <option value="">— เลือกหมวดหมู่ —</option>
+          <option value="manual_orient">📚 คู่มือปฐมนิเทศ</option>
+          <optgroup label="── แนวทางต่างๆ ──">
             <option value="wi_instruction">Work Instruction (WI)</option>
-            <option value="wi_procurement">แผนจัดซื้อจัดจ้าง</option>
-            <option value="wi_annual">รายงานประจำปี</option>
+            <option value="manual_guide">คู่มือ / แนวทางปฏิบัติ</option>
             <option value="wi_other">อื่นๆ</option>
           </optgroup>
           <optgroup label="── แบบฟอร์ม ──">
@@ -1289,10 +1290,10 @@
             <option value="form_incident">แบบฟอร์มรายงานอุบัติการณ์</option>
             <option value="form_eval">แบบฟอร์มประเมินผล</option>
           </optgroup>
-          <optgroup label="── คู่มือ / แนวทาง ──">
-            <option value="manual_orient">คู่มือปฐมนิเทศ</option>
+          <optgroup label="── เอกสารบริหาร ──">
             <option value="manual_plan">แผนปฏิบัติการ</option>
-            <option value="manual_guide">คู่มือ / แนวทางปฏิบัติ</option>
+            <option value="wi_procurement">แผนจัดซื้อจัดจ้าง</option>
+            <option value="wi_annual">รายงานประจำปี</option>
           </optgroup>
         </select>
       </div>
