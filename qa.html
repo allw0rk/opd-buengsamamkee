@@ -4,106 +4,130 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>มาตรฐาน QA — งานการพยาบาลผู้ป่วยนอก</title>
-<style>
-:root{--primary:#0052A5;--primary-dark:#001F4D;--teal:#0D9488;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',sans-serif;background:#F0F4F8;color:#1E293B;min-height:100vh}
-/* ── NAV ── */
-nav{background:var(--primary-dark);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
-.nav-inner{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;gap:16px;height:56px}
-.nav-logo{font-size:15px;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap}
-.nav-logo span{color:rgba(255,255,255,.55);font-weight:400}
-.nav-back{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;transition:all .2s;cursor:pointer;font-family:inherit}
-.nav-back:hover{background:rgba(255,255,255,.18);color:#fff}
-/* ── WRAP ── */
-.wrap{max-width:1000px;margin:0 auto;padding:2rem 1.5rem}
-/* ── PAGE TITLE ── */
-.pg-eyebrow{font-size:11px;font-weight:600;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem}
-.pg-title{font-size:26px;font-weight:800;color:var(--primary-dark);margin-bottom:.35rem}
-.pg-sub{font-size:13.5px;color:#64748B;margin-bottom:1.75rem}
-/* ── MODULE TABS ── */
-.mod-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.75rem}
-.mod-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:.65rem 1rem;border-radius:10px;border:2px solid transparent;background:#fff;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:var(--shadow);min-width:88px}
-.mod-btn .mb-num{font-size:11px;font-weight:700;color:#94A3B8}
-.mod-btn .mb-lbl{font-size:12px;font-weight:600;color:#334155;text-align:center;line-height:1.3}
-.mod-btn.active{border-color:var(--primary);background:var(--primary)}
-.mod-btn.active .mb-num{color:rgba(255,255,255,.6)}
-.mod-btn.active .mb-lbl{color:#fff}
-/* ── DETAIL CARD ── */
-.qa-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:none}
-.qa-card.visible{display:flex}
-.qa-left{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.25rem;gap:14px}
-.qa-left .ql-badge{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px}
-.qa-left .ql-num{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.04em}
-.qa-left .ql-title{font-size:17px;font-weight:800;color:#fff;text-align:center;line-height:1.3}
-.qa-right{flex:1;padding:1.75rem 2rem;border-left:1px solid #E8EDF3;min-height:320px}
-.qa-right h3{font-size:14px;font-weight:700;color:#64748B;letter-spacing:.04em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
-.qa-right h3::after{content:'';flex:1;height:1px;background:#E8EDF3}
-/* ── DOC LIST ── */
-.doc-list{display:flex;flex-direction:column;gap:2px}
-.doc-row{display:flex;align-items:center;gap:12px;padding:.6rem .75rem;border-radius:8px;transition:background .15s;text-decoration:none;color:inherit}
-.doc-row:hover{background:#F1F5F9}
-.doc-row .dr-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.doc-row .dr-icon.pdf{background:#FEE2E2}.doc-row .dr-icon.word{background:#DBEAFE}.doc-row .dr-icon.excel{background:#D1FAE5}.doc-row .dr-icon.link{background:#EDE9FE}
-.doc-row .dr-name{font-size:14px;font-weight:600;color:var(--primary);flex:1}
-.doc-row .dr-type{font-size:11px;font-weight:700;color:#94A3B8;letter-spacing:.04em;text-transform:uppercase}
-.doc-empty{color:#94A3B8;font-size:13.5px;padding:1rem .75rem;display:flex;align-items:center;gap:10px}
-.qa-loading{color:#94A3B8;font-size:13.5px;padding:1rem .75rem}
-/* ── COLORS PER MODULE ── */
-.mc1{background:linear-gradient(135deg,#5B21B6,#8B5CF6)}.mc2{background:linear-gradient(135deg,#0052A5,#3B82F6)}.mc3{background:linear-gradient(135deg,#065F46,#10B981)}.mc4{background:linear-gradient(135deg,#92400E,#F59E0B)}.mc5{background:linear-gradient(135deg,#1E3A5F,#0369A1)}.mc6{background:linear-gradient(135deg,#9F1239,#F43F5E)}.mc7{background:linear-gradient(135deg,#713F12,#D97706)}
-/* ── RESPONSIVE ── */
-@media(max-width:640px){
-  .qa-card.visible{flex-direction:column}
-  .qa-left{width:100%;flex-direction:row;padding:1.25rem;gap:16px}
-  .qa-left .ql-badge{width:60px;height:60px;font-size:26px}
-  .qa-left .ql-title{font-size:15px;text-align:left}
-  .qa-right{border-left:none;border-top:1px solid #E8EDF3;padding:1.25rem}
-  .mod-btn{min-width:70px;padding:.55rem .75rem}
-}
-</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0052A5;--primary-dark:#001F4D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#EAEEF3;min-height:100vh}
+
+/* NAV */
+nav{background:var(--primary-dark);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.35)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;height:54px;gap:12px}
+.nav-logo{font-size:15px;font-weight:700;color:#fff;text-decoration:none}
+.nav-logo span{color:rgba(255,255,255,.45);font-weight:400}
+.nav-back{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 14px;font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;font-family:inherit;transition:all .2s}
+.nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* WRAP */
+.wrap{max-width:960px;margin:0 auto;padding:2rem 1.25rem}
+.pg-label{font-size:11px;font-weight:700;color:#6366F1;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem}
+.pg-title{font-size:24px;font-weight:800;color:var(--primary-dark);margin-bottom:.3rem}
+.pg-sub{font-size:13px;color:#64748B;margin-bottom:1.5rem}
+
+/* MODULE TABS */
+.mod-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.mod-btn{padding:.55rem 1.1rem;border-radius:20px;border:2px solid #CBD5E1;background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:#475569;cursor:pointer;transition:all .2s;white-space:nowrap}
+.mod-btn:hover{border-color:var(--primary);color:var(--primary)}
+.mod-btn.active{border-color:transparent;color:#fff}
+
+/* MAIN CARD */
+.qa-main{display:flex;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.12);min-height:380px}
+
+/* LEFT PANEL */
+.qa-left{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:2rem 1.25rem;position:relative;overflow:hidden}
+.qa-left::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.25)}
+.ql-glow{position:relative;z-index:1;width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:1.25rem}
+.ql-mod-badge{position:relative;z-index:1;background:rgba(0,0,0,.55);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:.3rem .9rem;font-size:12px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.06em;margin-bottom:.5rem}
+.ql-mod-title{position:relative;z-index:1;font-size:17px;font-weight:800;color:#fff;text-align:center;line-height:1.35;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+
+/* RIGHT PANEL */
+.qa-right{flex:1;background:#fff;padding:2rem 2rem 2rem 2.25rem;overflow-y:auto}
+.qa-right-title{font-size:13px;font-weight:700;color:#94A3B8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.1rem;display:flex;align-items:center;gap:10px}
+.qa-right-title::after{content:'';flex:1;height:1px;background:#E2E8F0}
+
+/* DOC LIST */
+.doc-list{display:flex;flex-direction:column;gap:0}
+.doc-link{display:flex;align-items:center;gap:10px;padding:.55rem 0;border-bottom:1px solid #F1F5F9;text-decoration:none;color:inherit;transition:background .15s;border-radius:4px;padding-left:2px}
+.doc-link:last-child{border-bottom:none}
+.doc-link:hover .dl-name{text-decoration:underline}
+.dl-bullet{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.dl-name{font-size:14px;font-weight:600;color:#3B5BDB;flex:1;line-height:1.4}
+.dl-badge{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;background:#F1F5F9;color:#64748B;text-transform:uppercase}
+.qa-empty{color:#94A3B8;font-size:13.5px;padding:.5rem 0;display:flex;align-items:center;gap:10px}
+.qa-loading{color:#94A3B8;font-size:13.5px;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* MODULE COLORS */
+.m1-bg{background:linear-gradient(160deg,#1A0533 0%,#5B21B6 100%)}
+.m1-glow{background:rgba(139,92,246,.2);box-shadow:0 0 0 3px rgba(192,132,252,.4),0 0 40px rgba(139,92,246,.5)}
+.m1-btn{background:#7C3AED}
+.m2-bg{background:linear-gradient(160deg,#001F4D 0%,#0052A5 100%)}
+.m2-glow{background:rgba(59,130,246,.2);box-shadow:0 0 0 3px rgba(147,197,253,.4),0 0 40px rgba(59,130,246,.5)}
+.m2-btn{background:#1D4ED8}
+.m3-bg{background:linear-gradient(160deg,#022C22 0%,#065F46 100%)}
+.m3-glow{background:rgba(16,185,129,.2);box-shadow:0 0 0 3px rgba(110,231,183,.4),0 0 40px rgba(16,185,129,.5)}
+.m3-btn{background:#059669}
+.m4-bg{background:linear-gradient(160deg,#451A03 0%,#92400E 100%)}
+.m4-glow{background:rgba(245,158,11,.2);box-shadow:0 0 0 3px rgba(252,211,77,.4),0 0 40px rgba(245,158,11,.5)}
+.m4-btn{background:#D97706}
+.m5-bg{background:linear-gradient(160deg,#0F172A 0%,#1E3A5F 100%)}
+.m5-glow{background:rgba(14,165,233,.2);box-shadow:0 0 0 3px rgba(125,211,252,.4),0 0 40px rgba(14,165,233,.5)}
+.m5-btn{background:#0284C7}
+.m6-bg{background:linear-gradient(160deg,#3B0014 0%,#9F1239 100%)}
+.m6-glow{background:rgba(244,63,94,.2);box-shadow:0 0 0 3px rgba(253,164,175,.4),0 0 40px rgba(244,63,94,.5)}
+.m6-btn{background:#E11D48}
+.m7-bg{background:linear-gradient(160deg,#1C0A00 0%,#713F12 100%)}
+.m7-glow{background:rgba(217,119,6,.2);box-shadow:0 0 0 3px rgba(253,211,77,.4),0 0 40px rgba(217,119,6,.5)}
+.m7-btn{background:#B45309}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .qa-main{flex-direction:column;min-height:unset}
+  .qa-left{width:100%;min-height:180px;flex-direction:row;justify-content:flex-start;padding:1.25rem 1.5rem;gap:16px}
+  .ql-glow{width:80px;height:80px;font-size:32px;margin-bottom:0}
+  .ql-mod-title{font-size:15px;text-align:left}
+  .qa-right{padding:1.25rem}
+}
+</style>
 </head>
 <body>
 
 <nav>
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">OPD <span>บึงสามัคคี</span></a>
-    <div style="flex:1"></div>
     <a class="nav-back" href="index.html">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
       กลับหน้าหลัก
     </a>
   </div>
 </nav>
 
 <div class="wrap">
-  <div class="pg-eyebrow">มาตรฐานคุณภาพการพยาบาล</div>
+  <div class="pg-label">มาตรฐานคุณภาพการพยาบาล</div>
   <div class="pg-title">QA 7 มิติ</div>
   <div class="pg-sub">กองการพยาบาล สำนักงานปลัดกระทรวงสาธารณสุข พ.ศ. 2568</div>
 
-  <!-- Module Tabs -->
   <div class="mod-tabs" id="mod-tabs">
-    <button class="mod-btn" onclick="selectModule(1,this)"><span class="mb-num">หมวด 1</span><span class="mb-lbl">การนำองค์กร</span></button>
-    <button class="mod-btn" onclick="selectModule(2,this)"><span class="mb-num">หมวด 2</span><span class="mb-lbl">กลยุทธ์</span></button>
-    <button class="mod-btn" onclick="selectModule(3,this)"><span class="mb-num">หมวด 3</span><span class="mb-lbl">ผู้ใช้บริการ</span></button>
-    <button class="mod-btn" onclick="selectModule(4,this)"><span class="mb-num">หมวด 4</span><span class="mb-lbl">การวัด วิเคราะห์ และจัดการความรู้</span></button>
-    <button class="mod-btn" onclick="selectModule(5,this)"><span class="mb-num">หมวด 5</span><span class="mb-lbl">บุคลากร</span></button>
-    <button class="mod-btn" onclick="selectModule(6,this)"><span class="mb-num">หมวด 6</span><span class="mb-lbl">การปฏิบัติการพยาบาล</span></button>
-    <button class="mod-btn" onclick="selectModule(7,this)"><span class="mb-num">หมวด 7</span><span class="mb-lbl">ผลลัพธ์ทางการพยาบาล</span></button>
+    <button class="mod-btn" onclick="selectMod(1,this)">หมวด 1</button>
+    <button class="mod-btn" onclick="selectMod(2,this)">หมวด 2</button>
+    <button class="mod-btn" onclick="selectMod(3,this)">หมวด 3</button>
+    <button class="mod-btn" onclick="selectMod(4,this)">หมวด 4</button>
+    <button class="mod-btn" onclick="selectMod(5,this)">หมวด 5</button>
+    <button class="mod-btn" onclick="selectMod(6,this)">หมวด 6</button>
+    <button class="mod-btn" onclick="selectMod(7,this)">หมวด 7</button>
   </div>
 
-  <!-- Detail Card -->
-  <div class="qa-card" id="qa-card">
+  <div class="qa-main" id="qa-main">
     <div class="qa-left" id="qa-left">
-      <div class="ql-badge" id="ql-badge"></div>
+      <div class="ql-glow" id="ql-glow"></div>
       <div>
-        <div class="ql-num" id="ql-num"></div>
-        <div class="ql-title" id="ql-title"></div>
+        <div class="ql-mod-badge" id="ql-num"></div>
+        <div class="ql-mod-title" id="ql-title"></div>
       </div>
     </div>
     <div class="qa-right">
-      <h3>เอกสารอ้างอิง</h3>
+      <div class="qa-right-title">เอกสารอ้างอิง</div>
       <div id="qa-doc-list"><div class="qa-loading">กำลังโหลด...</div></div>
     </div>
   </div>
@@ -112,71 +136,81 @@ nav{background:var(--primary-dark);position:sticky;top:0;z-index:100;box-shadow:
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <script>
-const FC={apiKey:"AIzaSyAqMraTjOyJVO-G1B7j_rmCeim0LEuNERk",authDomain:"opd-buengsamamkee.firebaseapp.com",projectId:"opd-buengsamamkee",storageBucket:"opd-buengsamamkee.firebasestorage.app",messagingSenderId:"444798882247",appId:"1:444798882247:web:05f0d90d6eded5f6a4c9e2"};
-firebase.initializeApp(FC);
+firebase.initializeApp({apiKey:"AIzaSyAqMraTjOyJVO-G1B7j_rmCeim0LEuNERk",authDomain:"opd-buengsamamkee.firebaseapp.com",projectId:"opd-buengsamamkee",storageBucket:"opd-buengsamamkee.firebasestorage.app",messagingSenderId:"444798882247",appId:"1:444798882247:web:05f0d90d6eded5f6a4c9e2"});
 const db = firebase.firestore();
 
-const MODULES = {
-  1:{title:'การนำองค์กร',   emoji:'🏛️', cls:'mc1'},
-  2:{title:'กลยุทธ์',        emoji:'🎯', cls:'mc2'},
-  3:{title:'ผู้ใช้บริการ',   emoji:'🤝', cls:'mc3'},
-  4:{title:'การวัด วิเคราะห์\nและจัดการความรู้', emoji:'📊', cls:'mc4'},
-  5:{title:'บุคลากร',        emoji:'👩‍⚕️', cls:'mc5'},
-  6:{title:'การปฏิบัติการ\nพยาบาล', emoji:'💊', cls:'mc6'},
-  7:{title:'ผลลัพธ์ทาง\nการพยาบาล', emoji:'📈', cls:'mc7'},
+const MODS = {
+  1:{title:'ผู้นำองค์กร',                       emoji:'🏛️'},
+  2:{title:'กลยุทธ์',                             emoji:'🎯'},
+  3:{title:'ผู้ใช้บริการ',                        emoji:'🤝'},
+  4:{title:'การวัด วิเคราะห์\nและจัดการความรู้', emoji:'📊'},
+  5:{title:'บุคลากร',                             emoji:'👩‍⚕️'},
+  6:{title:'การปฏิบัติการพยาบาล',                emoji:'💊'},
+  7:{title:'ผลลัพธ์ทางการพยาบาล',               emoji:'📈'},
 };
 
-let currentMod = 0;
+let curMod = 0;
 
-async function selectModule(num, btn) {
-  if (currentMod === num) return;
-  currentMod = num;
-  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+async function selectMod(num, btn) {
+  if (curMod === num) return;
+  curMod = num;
+
+  // Tab active state
+  document.querySelectorAll('.mod-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '';
+    b.style.borderColor = '';
+    b.style.color = '';
+  });
   btn.classList.add('active');
+  btn.style.background = getComputedStyle(document.documentElement).getPropertyValue('--m'+num+'-btn-raw') || '';
+  // Apply button color inline since CSS class approach is cleaner:
+  const btnColors = ['','#7C3AED','#1D4ED8','#059669','#D97706','#0284C7','#E11D48','#B45309'];
+  btn.style.background = btnColors[num];
+  btn.style.borderColor = btnColors[num];
+  btn.style.color = '#fff';
 
-  const m = MODULES[num];
-  const card = document.getElementById('qa-card');
+  // Left panel
   const left = document.getElementById('qa-left');
-  left.className = 'qa-left ' + m.cls;
-  document.getElementById('ql-badge').textContent = m.emoji;
+  left.className = 'qa-left m'+num+'-bg';
+  const glow = document.getElementById('ql-glow');
+  glow.className = 'ql-glow m'+num+'-glow';
+  glow.textContent = MODS[num].emoji;
   document.getElementById('ql-num').textContent = 'หมวด ' + num;
-  document.getElementById('ql-title').textContent = m.title.replace('\\n', ' ');
-  card.className = 'qa-card visible';
+  document.getElementById('ql-title').textContent = MODS[num].title.replace('\n',' ');
 
+  // Load docs
   const listEl = document.getElementById('qa-doc-list');
   listEl.innerHTML = '<div class="qa-loading">กำลังโหลด...</div>';
-
   try {
-    const snap = await db.collection('documents').where('qaModule', '==', String(num)).get();
+    const snap = await db.collection('documents').where('qaModule','==',String(num)).get();
     if (snap.empty) {
-      listEl.innerHTML = '<div class="doc-empty"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ยังไม่มีเอกสารในหมวดนี้</div>';
+      listEl.innerHTML = '<div class="qa-empty"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ยังไม่มีเอกสารในหมวดนี้</div>';
       return;
     }
-    const docs = snap.docs.map(d => ({id:d.id,...d.data()}))
-      .sort((a,b) => (b.addedAt?.seconds||0)-(a.addedAt?.seconds||0));
-    const icons = {pdf:'📄',word:'📝',excel:'📊',link:'🔗'};
+    const docs = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(b.addedAt?.seconds||0)-(a.addedAt?.seconds||0));
+    const ftBadge = {pdf:'PDF',word:'Word',excel:'Excel',link:'Link'};
+    const bulletColors = ['','#8B5CF6','#3B82F6','#10B981','#F59E0B','#0EA5E9','#F43F5E','#D97706'];
     listEl.innerHTML = '<div class="doc-list">' + docs.map(doc => {
-      const ft = ['pdf','word','excel','link'].includes(doc.fileType) ? doc.fileType : 'link';
-      const icon = icons[ft] || '📄';
-      return `<a class="doc-row" href="${esc(doc.url||'#')}" target="_blank" rel="noopener">
-        <div class="dr-icon ${ft}">${icon}</div>
-        <span class="dr-name">${esc(doc.title||'ไม่มีชื่อ')}</span>
-        <span class="dr-type">${ft.toUpperCase()}</span>
+      const ft = doc.fileType || 'link';
+      return `<a class="doc-link" href="${esc(doc.url||'#')}" target="_blank" rel="noopener">
+        <div class="dl-bullet" style="background:${bulletColors[num]};opacity:.7"></div>
+        <span class="dl-name">${esc(doc.title||'ไม่มีชื่อ')}</span>
+        <span class="dl-badge">${ftBadge[ft]||ft}</span>
       </a>`;
     }).join('') + '</div>';
   } catch(err) {
-    listEl.innerHTML = '<div class="doc-empty">โหลดไม่สำเร็จ</div>';
+    listEl.innerHTML = '<div class="qa-empty">โหลดไม่สำเร็จ</div>';
     console.error(err);
   }
 }
 
-function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-// Auto-select from URL param ?m=1
 window.addEventListener('load', () => {
-  const m = parseInt(new URLSearchParams(location.search).get('m')) || 1;
-  const btn = document.querySelectorAll('.mod-btn')[m-1];
-  if (btn) selectModule(m, btn);
+  const m = Math.min(7, Math.max(1, parseInt(new URLSearchParams(location.search).get('m'))||1));
+  selectMod(m, document.querySelectorAll('.mod-btn')[m-1]);
 });
 </script>
 </body>
