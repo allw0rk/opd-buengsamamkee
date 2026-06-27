@@ -1356,7 +1356,7 @@ async function qdSave() {
     fileType:    ftMap[ext] || 'link',
     url,
     qaModule:    module,
-    addedBy:     auth.currentUser?.email || 'staff',
+    addedBy:     currentUser || 'staff',
     addedAt:     firebase.firestore.FieldValue.serverTimestamp(),
   };
   try {
