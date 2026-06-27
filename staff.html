@@ -38,7 +38,7 @@
         <button class="nav-btn" onclick="showPage('entry',this)" id="nb-entry">บันทึกสถิติ</button>
         <button class="nav-btn" onclick="showPage('docs',this)" id="nb-docs">เอกสารหน่วยงาน</button>
         <button class="nav-btn" onclick="showPage('news',this)" id="nb-news">ข่าวสาร</button>
-        <button class="nav-btn" onclick="openQaDocModal()" id="nb-add-qa-doc">+ เพิ่มเอกสาร QA</button>
+        <button class="nav-btn" onclick="showPage('qa-doc',this)" id="nb-qa-doc">เพิ่มเอกสาร QA</button>
       </div>
     </div>
   </nav>
@@ -1154,6 +1154,72 @@
       </div>
     </div>
 
+    </div>
+  </div>
+
+  <!-- QA DOC UPLOAD PAGE -->
+  <div class="page" id="page-qa-doc">
+    <div class="wrap" style="max-width:640px">
+      <div class="sec-eyebrow">มาตรฐานคุณภาพการพยาบาล</div>
+      <div class="sec-title">เพิ่มเอกสาร QA</div>
+
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.75rem 2rem;margin-top:1.5rem;box-shadow:var(--shadow)">
+        <div class="field">
+          <label>หมวด QA <span style="color:var(--danger)">*</span></label>
+          <select id="qd-module" onchange="qdModuleChange()">
+            <option value="">— เลือกหมวด —</option>
+            <option value="1">หมวด 1 · การนำองค์กร</option>
+            <option value="2">หมวด 2 · กลยุทธ์</option>
+            <option value="3">หมวด 3 · ผู้ใช้บริการ</option>
+            <option value="4">หมวด 4 · การวัด วิเคราะห์ และการจัดการความรู้</option>
+            <option value="5">หมวด 5 · บุคลากร</option>
+            <option value="6">หมวด 6 · การปฏิบัติการพยาบาล</option>
+            <option value="7">หมวด 7 · ผลลัพธ์ทางการพยาบาล</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>ชื่อเอกสาร <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="qd-title" placeholder="ชื่อเอกสาร">
+        </div>
+
+        <div class="field">
+          <label>หมวดหมู่เอกสาร</label>
+          <select id="qd-cat">
+            <option value="manual_orient">คู่มือปฐมนิเทศ</option>
+            <option value="wi_instruction">แนวทางต่างๆ</option>
+            <option value="form_general">แบบฟอร์ม</option>
+            <option value="manual_plan">แผนปฏิบัติการ</option>
+            <option value="wi_procurement">แผนจัดซื้อจัดจ้าง</option>
+            <option value="wi_annual">รายงานประจำปี</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>รายละเอียด (ถ้ามี)</label>
+          <input type="text" id="qd-desc" placeholder="คำอธิบายสั้นๆ">
+        </div>
+
+        <div class="field">
+          <label>ประเภทไฟล์</label>
+          <select id="qd-filetype">
+            <option value="pdf">PDF</option>
+            <option value="word">Word</option>
+            <option value="excel">Excel</option>
+            <option value="link">Link</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>URL / ลิงก์เอกสาร <span style="color:var(--danger)">*</span></label>
+          <input type="url" id="qd-url" placeholder="https://...">
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:.5rem">
+          <button class="btn-s" onclick="qdReset()">ล้างข้อมูล</button>
+          <button class="btn-p" onclick="qdSave()">บันทึกเอกสาร</button>
+        </div>
+      </div>
     </div>
   </div>
 

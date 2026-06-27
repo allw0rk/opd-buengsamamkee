@@ -1286,8 +1286,38 @@ function clearDocFile() {
   document.getElementById('doc-uploaded-url').value = '';
 }
 
-function openQaDocModal() {
-  openDocModal(null, true);
+/* ── QA DOC PAGE ── */
+function qdModuleChange() {}
+function qdReset() {
+  ['qd-module','qd-title','qd-desc','qd-url'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  const cat = document.getElementById('qd-cat'); if(cat) cat.value = 'wi_instruction';
+  const ft = document.getElementById('qd-filetype'); if(ft) ft.value = 'pdf';
+}
+async function qdSave() {
+  const module = document.getElementById('qd-module').value;
+  const title  = document.getElementById('qd-title').value.trim();
+  const url    = document.getElementById('qd-url').value.trim();
+  if (!module) { toast('กรุณาเลือกหมวด QA', 'err'); return; }
+  if (!title)  { toast('กรุณากรอกชื่อเอกสาร', 'err'); return; }
+  if (!url)    { toast('กรุณากรอก URL เอกสาร', 'err'); return; }
+  const payload = {
+    title,
+    category:    document.getElementById('qd-cat').value,
+    description: document.getElementById('qd-desc').value.trim(),
+    fileType:    document.getElementById('qd-filetype').value,
+    url,
+    qaModule:    module,
+    addedBy:     auth.currentUser?.email || 'staff',
+    addedAt:     firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  try {
+    await db.collection('documents').add(payload);
+    toast('บันทึกเอกสารสำเร็จ');
+    qdReset();
+  } catch(err) {
+    toast('บันทึกไม่สำเร็จ', 'err');
+    console.error(err);
+  }
 }
 function openDocModal(editDoc, showQa = false) {
   document.getElementById('doc-modal-title').textContent = editDoc ? 'แก้ไขเอกสาร' : 'เพิ่มเอกสาร';
