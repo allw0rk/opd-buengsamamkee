@@ -1184,8 +1184,27 @@
         </div>
 
         <div class="field">
-          <label>ลิงก์เอกสาร <span style="color:var(--danger)">*</span></label>
-          <input type="url" id="qd-url" placeholder="https://drive.google.com/... หรือ link เอกสาร">
+          <label>เอกสาร <span style="color:var(--danger)">*</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input type="url" id="qd-url" placeholder="ใส่ลิงก์เอกสาร" style="flex:1">
+            <button type="button" class="btn-s" onclick="document.getElementById('qd-file-input').click()">อัปโหลดไฟล์</button>
+          </div>
+          <div id="qd-file-chosen" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+            <span id="qd-file-icon" style="font-size:22px">📄</span>
+            <div style="flex:1;min-width:0">
+              <div id="qd-file-name" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="qd-file-size" style="font-size:11px;color:var(--text3)"></div>
+            </div>
+            <button type="button" onclick="qdClearFile()" style="background:none;border:none;color:var(--text-light);cursor:pointer;font-size:18px;line-height:1">×</button>
+          </div>
+          <input type="file" id="qd-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="qdHandleFile(this)">
+          <div id="qd-upload-bar" style="display:none;margin-top:4px">
+            <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden">
+              <div id="qd-upload-fill" style="height:100%;background:var(--primary);width:0;transition:width .2s"></div>
+            </div>
+            <div id="qd-upload-status" style="font-size:11px;color:var(--text3);margin-top:4px">กำลังอัปโหลด...</div>
+          </div>
+          <input type="hidden" id="qd-uploaded-url">
         </div>
 
         <div class="field">
