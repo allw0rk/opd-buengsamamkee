@@ -1201,23 +1201,33 @@
         </div>
 
         <div class="field">
-          <label>ประเภทไฟล์</label>
-          <select id="qd-filetype">
-            <option value="pdf">PDF</option>
-            <option value="word">Word</option>
-            <option value="excel">Excel</option>
-            <option value="link">Link</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>URL / ลิงก์เอกสาร <span style="color:var(--danger)">*</span></label>
-          <input type="url" id="qd-url" placeholder="https://...">
+          <label>ไฟล์เอกสาร <span style="color:var(--danger)">*</span></label>
+          <div id="qd-file-chosen" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+            <span id="qd-file-icon" style="font-size:22px">📄</span>
+            <div style="flex:1;min-width:0">
+              <div id="qd-file-name" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="qd-file-size" style="font-size:11px;color:var(--text3)"></div>
+            </div>
+            <button type="button" onclick="qdClearFile()" style="background:none;border:none;color:var(--text-light);cursor:pointer;font-size:18px;line-height:1">×</button>
+          </div>
+          <div id="qd-dropzone" class="img-dropzone" onclick="document.getElementById('qd-file-input').click()" style="padding:1.4rem;display:flex">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="color:var(--border2);margin-bottom:6px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            <span style="font-size:13px;color:var(--text-light)">คลิกเพื่อเลือกไฟล์</span>
+            <span style="font-size:11px;color:var(--border2)">PDF · Word · Excel · ไม่เกิน 20MB</span>
+          </div>
+          <input type="file" id="qd-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="qdHandleFile(this)">
+          <div id="qd-upload-bar" style="display:none;margin-top:8px">
+            <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden">
+              <div id="qd-upload-fill" style="height:100%;background:var(--primary);width:0;transition:width .2s"></div>
+            </div>
+            <div id="qd-upload-status" style="font-size:11px;color:var(--text3);margin-top:4px">กำลังอัปโหลด...</div>
+          </div>
+          <input type="hidden" id="qd-uploaded-url">
         </div>
 
         <div style="display:flex;gap:10px;margin-top:.5rem">
           <button class="btn-s" onclick="qdReset()">ล้างข้อมูล</button>
-          <button class="btn-p" onclick="qdSave()">บันทึกเอกสาร</button>
+          <button class="btn-p" id="qd-save-btn" onclick="qdSave()">บันทึกเอกสาร</button>
         </div>
       </div>
     </div>
